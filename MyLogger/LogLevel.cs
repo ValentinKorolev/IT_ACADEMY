@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace MyLogger
 {
-    public interface IFileService
+    public enum LogLevel
     {
-        Task WriteLog(string message,Exception exception = null);
+        INF = 0,
+        DEB = 1,
+        ERR = 2       
     }
 }

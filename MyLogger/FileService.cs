@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace MyLogger
 {
-    public sealed class FileService : IFileService
+    public sealed class FileService 
     {
         private const string Path = @"D:\SushiLogs\log.txt";
 
-        public async Task WriteLog(string message, Exception ex)
+        public async Task WriteLog(string message, Exception ex = null)
         {
             using (StreamWriter sw = new StreamWriter(Path,true,Encoding.Default))
             {
