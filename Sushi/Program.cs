@@ -1,8 +1,4 @@
-﻿
-using SushiMarcet;
-
-
-class Programm
+﻿class Programm
 {
     
     
@@ -10,15 +6,17 @@ class Programm
     {
         try
         {
-            Logger<Programm>.Info("Программа запущенна");
+            Logger<Programm>.Info("The application is running");
 
-            PageWelcom pageWelcom = new();
-            int selectedIndex = pageWelcom.Run();
+            Bot.SayHello();
+            Bot.AskNameUser();
+            Bot.ShowMenu();
         }
         catch (Exception ex)
         {
-            Logger<Programm>.Error("Программа не запустилась",ex);
-        }
+
+        }    
+        
         
     }
 }

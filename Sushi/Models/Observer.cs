@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SushiMarcet
+namespace SushiMarcet.Models
 {
-    internal class ProductRepository
+    public static class Observer
     {
+        public static string nameUser;
     }
 }
