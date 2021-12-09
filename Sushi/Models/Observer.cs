@@ -9,5 +9,6 @@ namespace SushiMarcet.Models
     public static class Observer
     {
         public static string nameUser;
+        public static int IdSushi;
     }
 }

@@ -12,7 +12,7 @@ namespace SushiMarcet
     {
         private static string _nameSpace;
         private readonly static string _currentTime = DateTime.Now.ToString();
-        private const string Path = $@"D:\SushiLogs\log.txt";
+        private const string Path = @"D:\SushiLogs\log.txt";
 
         public static async Task WriteLog(string message, Exception ex = null)
         {

@@ -6,19 +6,12 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Models
 {
-    public class Menu
+    public abstract class PageFather
     {
-        private string[] _options;
-        private int _selectedIndex;
-        private string _bannerPage;
-        private ConsoleKey keyPressed;
-
-        public Menu()
-        {
-            _bannerPage = $"{Observer.nameUser} what do you want?";
-            _options = new string[] { "View the menu", "Go out" };
-        }
-
+        protected string[] _options;
+        protected int _selectedIndex;
+        protected string _bannerPage;
+        protected ConsoleKey keyPressed;
         private void DisplayOptions()
         {
             WriteLine();
@@ -27,13 +20,13 @@ namespace SushiMarcet.Models
             {
                 if (i == _selectedIndex)
                 {
-                    Console.ForegroundColor = ConsoleColor.Black;
-                    Console.BackgroundColor = ConsoleColor.White;
+                    ForegroundColor = ConsoleColor.Black;
+                    BackgroundColor = ConsoleColor.White;
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.BackgroundColor = ConsoleColor.Black;
+                    ForegroundColor = ConsoleColor.White;
+                    BackgroundColor = ConsoleColor.Black;
                 }
                 WriteLine($"{_options[i]}");
             }
@@ -74,9 +67,14 @@ namespace SushiMarcet.Models
 
             } while (keyPressed != ConsoleKey.Enter);
 
-            //TransferPage(keyPressed, _options, _selectedIndex);
+            TransferPage(keyPressed, _options, _selectedIndex);
 
             return _selectedIndex;
+        }
+
+        protected virtual void TransferPage(ConsoleKey keyPressed, string[] options, int selectedIndex)
+        {
+            
         }
     }
 }

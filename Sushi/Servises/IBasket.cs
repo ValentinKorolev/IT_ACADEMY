@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Servises
 {
-    public interface IRepository<T> where T : class
+    public interface IBasket<T> where T : class
     {
-        IEnumerable<T> GetAll();
+        public void Add(T item);
+        public void Delete(T item);
     }
 }

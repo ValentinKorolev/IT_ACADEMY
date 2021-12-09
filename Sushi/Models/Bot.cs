@@ -13,6 +13,8 @@ namespace SushiMarcet
         static TimeSpan _timeDay = new(0, 12, 0, 0);
         static TimeSpan _timeEvening = new(0, 17, 0, 0);
         static TimeSpan _timeNight = new(0, 22, 0, 0);
+        static ConsoleKeyInfo keyInfo;
+        static ConsoleKey keyPressed;
 
         public static void SayHello()
         {
@@ -31,7 +33,15 @@ namespace SushiMarcet
                     WriteLine("Good Night! Welcom to Sushi Marcet!!!");
                     break;
             }
-            Thread.Sleep(2000);
+
+            Thread.Sleep(1000);
+
+            WriteLine("Please, press any key to continue ...");
+
+            keyInfo = ReadKey();
+            keyPressed = keyInfo.Key;
+
+            Admin(keyPressed);
         }
 
         public static void AskNameUser()
@@ -45,20 +55,25 @@ namespace SushiMarcet
 
         public static void ShowMenu()
         {
-            Menu menu = new Menu();
+            PageMainMenu menu = new PageMainMenu();
 
             int _selectedIndex = menu.Run(); 
         }
 
-        //private static void ExitText(string str)
-        //{
-        //    char[] charString = str.ToCharArray();
+        public static void Admin(ConsoleKey keyPressed)
+        {
+            Clear ();
 
-        //    for (int i = 0; i <= charString.Length-1; i++)
-        //    {
-        //        Write(charString[i]);
-        //        Thread.Sleep(50);
-        //    }
-        //}
+            if (keyPressed == ConsoleKey.F12)
+            {
+                WriteLine("name: ");
+                string _name = ReadLine();
+                WriteLine("pass: ");
+                string _pass = ReadLine();
+
+                PageAdmin admin = new PageAdmin(_name,_pass);
+                int _selectedIndex = admin.Run();   
+            }
+        }
     }
 }

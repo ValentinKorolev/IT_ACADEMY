@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SushiMarcet.Servises
+namespace SushiMarcet.Models
 {
-    public interface IRepository<T> where T : class
+    public class Basket
     {
-        IEnumerable<T> GetAll();
+
     }
 }

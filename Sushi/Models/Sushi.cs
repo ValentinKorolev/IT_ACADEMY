@@ -8,19 +8,24 @@ namespace SushiMarcet
 {
     internal class Sushi
     {
-        public int Id { get; set; }
+        public int Id { get; protected set; }
+        public string Type { get; set; }
         public string Name { get; set; }
-        public float Weight { get; set; }
-        public float Calories { get; set; }
+        public string Description { get; set; }
         public decimal Price { get; set; }
 
-        public Sushi(int id, string name, decimal price, float weight, float calories)
+        public Sushi(int id,string type, string name, decimal price, string description)
         {
             Id = id;
+            Type = type;
             Name = name;
-            Weight = weight;
-            Calories = calories;
-            Price = price;    
+            Description = description;
+            Price = price;
+        }
+
+        public override string ToString()
+        {
+            return $"Id: {Id}, Type: {Type}, Name: {Name}; Description: {Description}; Price: {Price}$";
         }
     }
 }
