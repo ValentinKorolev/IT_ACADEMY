@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,43 +7,130 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Pages
 {
-    internal class PageMenuSushi : PageFather,IRepository<Sushi>
+    internal sealed class PageMenuSushi : PageFather,IGetSushi<Sushi>
     {
-        private IEnumerable<Sushi> _items;
+        private readonly IEnumerable<Sushi> _sushis;
+        private readonly string _goBack = "\nGo back";
 
-        public PageMenuSushi()
+        public PageMenuSushi(string sushiType)
         {
             _bannerPage = "Sushi Menu";
-            _items = GetAll();
-            _options = GetOptions(_items);
+
+            switch (sushiType)
+            {
+                case Observer.Uramaki:
+                    _sushis = GetAllUramaki();
+                    break;
+                case Observer.Futomaki:
+                    _sushis = GetAllFutomaki();
+                    break;
+                case Observer.Nigiri:
+                    _sushis = GetAllNigiri();
+                    break;
+                case Observer.BakedSushi:
+                    _sushis = GetAllBakedSushi();
+                    break;
+            }
+
+            _options = SetOptions(_sushis);
         }
 
-        public  IEnumerable<Sushi> GetAll()
+        public IEnumerable<Sushi> GetAllUramaki()
         {
-            using  (ApplicationContext db = new ApplicationContext())
+            try
             {
-                return db.Sushi.ToList();
+                var sushi = JsonGetSushi(Observer.Uramaki);
+                return sushi;
+                
+            }
+            catch (Exception ex)
+            {
+                using ApplicationContext db = new ApplicationContext();
+                return db.Sushi.Where(x => x.Type.Contains(Observer.Uramaki)).ToList();
+            }            
+        }
+
+        public IEnumerable<Sushi> GetAllFutomaki()
+        {
+
+            try
+            {
+                var sushi = JsonGetSushi(Observer.Futomaki);
+                return sushi;
+
+            }
+            catch (Exception ex)
+            {
+                using ApplicationContext db = new ApplicationContext();
+                return db.Sushi.Where(x => x.Type.Contains(Observer.Futomaki)).ToList();
             }
         }
 
-        private string[] GetOptions(IEnumerable<Sushi> sushis)
+        public IEnumerable<Sushi> GetAllNigiri()
         {
-            string[] options = new string[sushis.Count()];
-
-            for (int i = 0; i < options.Length; i++)
+            try
             {
-                options[i] = sushis.ElementAt(i).ToString();
+                var sushi = JsonGetSushi(Observer.Nigiri);
+                return sushi;
+
             }
+            catch (Exception ex)
+            {
+                using ApplicationContext db = new ApplicationContext();
+                return db.Sushi.Where(x => x.Type.Contains(Observer.Nigiri)).ToList();
+            }
+        }
+
+        public IEnumerable<Sushi> GetAllBakedSushi()
+        {
+            try
+            {
+                var sushi = JsonGetSushi(Observer.BakedSushi);
+                return sushi;
+
+            }
+            catch (Exception ex)
+            {
+                using ApplicationContext db = new ApplicationContext();
+                return db.Sushi.Where(x => x.Type.Contains(Observer.BakedSushi)).ToList();
+            }
+        }
+
+        private string[] SetOptions(IEnumerable<Sushi> sushis)
+        {
+            string[] options = new string[sushis.Count() + 1];
+
+            for (int i = 0; i < options.Length - 1; i++)
+            {
+                options[i] = sushis.ElementAt(i).ShowData();
+            }
+            options[^1] = _goBack;
+
             return options;
         }
 
-        protected override void TransferPage(ConsoleKey keyPressed, string[] options, int selectedIndex)
+        protected override void TransferPage(string[] options, int selectedIndex)
         {
-            if (keyPressed == ConsoleKey.Enter)
+            switch (options[selectedIndex])
             {
-                PageOrderSushi pageOrderSushi = new PageOrderSushi(_items.ElementAt(selectedIndex));
-                int _selectedIndex = pageOrderSushi.Run();
+                case "\nGo back":
+                    PageMainMenu pageMainMenu = new();
+                    _ = pageMainMenu.Run();
+                    break;
+                default:
+                    PageViewingSushi pageOrder = new(_sushis.ElementAt(selectedIndex));
+                    _ = pageOrder.Run();
+                    break;
             }
+        }
+
+        private IEnumerable<Sushi> JsonGetSushi(string typeSushi)
+        {
+            var fileName = File.ReadAllText(Observer.FileNameSushi);
+            var sushis = JsonConvert.DeserializeObject<ListProducts>(fileName);
+            var currentSushiType = sushis.sushiMenu.FindAll(x => x.Type == typeSushi);
+                         
+            return currentSushiType;
         }
     }
 }

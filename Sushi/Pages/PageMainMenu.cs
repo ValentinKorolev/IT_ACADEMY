@@ -6,36 +6,70 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Models
 {
-    public class PageMainMenu : PageFather
+    public sealed class PageMainMenu : PageFather
     {
         public PageMainMenu()
         {
-            _bannerPage = $"{Observer.nameUser} what do you want?";
-            _options = new string[] { "View the menu", "Basket", "Go out" };
+            if (Observer.nameUser != String.Empty) _bannerPage = $"{Observer.nameUser} what do you want?";
+            else _bannerPage = "What do you want?";
+
+            _options = new string[] { "View the menu", "Cart", "Go out" };
         }
 
         public PageMainMenu(string viewSushiMenu)
         {
             _bannerPage = "Menu Sushi Marcet";
-            _options = new string[] { "Uramaki", "Futomaki", "Nigiri", "Baked sushi",
-                                      "Sets", "Sauces and side dishes","Go Back" };
+            _options = new string[] { $"{Observer.Uramaki}", $"{Observer.Futomaki}", $"{Observer.Nigiri}", $"{Observer.BakedSushi}",
+                                      "Sets","Go Back" };
         }
 
-        protected override void TransferPage(ConsoleKey keyPressed, string[] options, int selectedIndex)
+        protected override void TransferPage(string[] options, int selectedIndex)
         {
-            if (keyPressed == ConsoleKey.Enter && options[selectedIndex] == "View the menu")
+            switch (options[selectedIndex])
             {
-                Clear();
-                PageMainMenu page = new("View the menu");
-                _ = page.Run();
-            }
-            else if (keyPressed == ConsoleKey.Enter && options[selectedIndex] == "Basket")
-            {
-                Clear();
-            }
-            else if (keyPressed == ConsoleKey.Enter && options[selectedIndex] == "Go out")
-            {
-                Clear();
+                case "View the menu":
+                    Clear();
+                    PageMainMenu page = new("View the menu");
+                    _ = page.Run();
+                    break;
+                case Observer.Uramaki:
+                    Clear();
+                    PageMenuSushi pageUramaki = new(Observer.Uramaki);
+                    _ = pageUramaki.Run();
+                    break;
+                case Observer.Futomaki:
+                    Clear();
+                    PageMenuSushi pageFutomaki = new(Observer.Futomaki);
+                    _ = pageFutomaki.Run();
+                    break;
+                case Observer.Nigiri:
+                    Clear();
+                    PageMenuSushi pageNigiri = new(Observer.Nigiri);
+                    _ = pageNigiri.Run();
+                    break;
+                case Observer.BakedSushi:
+                    Clear();
+                    PageMenuSushi pageBakedSushi = new(Observer.BakedSushi);
+                    _ = pageBakedSushi.Run();
+                    break;
+                case Observer.Sets:
+                    Clear();
+                    PageMenuSushi pageSets = new(Observer.Sets);
+                    _ = pageSets.Run();
+                    break;
+                case "Go Back":
+                    Clear();
+                    PageMainMenu pageMainMenu = new();
+                    _ = pageMainMenu.Run();
+                    break;
+                case "Cart":
+                    Clear();
+                    PageCart pageBasket = new();
+                    _ = pageBasket.Run();
+                    break;
+                case "Go out":
+                    Clear();
+                    break;
             }
         }
     }

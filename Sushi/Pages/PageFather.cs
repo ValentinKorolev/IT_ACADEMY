@@ -67,12 +67,12 @@ namespace SushiMarcet.Models
 
             } while (keyPressed != ConsoleKey.Enter);
 
-            TransferPage(keyPressed, _options, _selectedIndex);
+            TransferPage(_options, _selectedIndex);
 
             return _selectedIndex;
         }
 
-        protected virtual void TransferPage(ConsoleKey keyPressed, string[] options, int selectedIndex)
+        protected virtual void TransferPage(string[] options, int selectedIndex)
         {
             
         }

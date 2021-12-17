@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,9 @@ namespace SushiMarcet
         public string Description { get; set; }
         public decimal Price { get; set; }
 
+        [NotMapped]
+        public int Servings { get; set; }
+
         public Sushi(int id,string type, string name, decimal price, string description)
         {
             Id = id;
@@ -21,11 +25,28 @@ namespace SushiMarcet
             Name = name;
             Description = description;
             Price = price;
+            Servings = 1;
         }
 
         public override string ToString()
         {
-            return $"Id: {Id}, Type: {Type}, Name: {Name}; Description: {Description}; Price: {Price}$";
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+
+            return $"{Name}; Price: {Price * Servings:c}";
         }
-    }
+
+        public string ShowDataForUser()
+        {
+            return "";
+        }
+
+        public string ShowData(int numServings = 1)
+        {
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+
+            return Servings == numServings || Servings == 0
+                ? $"{Name}; Description: {Description}; Price: {Price:c}"
+                : $"{Name}; Description: {Description}; Servings: {Servings} Price: {Price * Servings:c}"; 
+        }
+    }  
 }
