@@ -10,8 +10,8 @@ namespace SushiMarcet.Models
 {
     internal sealed class PageAdmin : PageFather
     {
-        private const string _name = "Admin123";
-        private const string _pass = "122345";
+        private const string Name = "Admin123";
+        private const string Pass = "122345";
 
         private int _infoId;
         private string _type;
@@ -21,7 +21,7 @@ namespace SushiMarcet.Models
 
         public PageAdmin(string name, string pass)
         {
-            if (_name != name || _pass != pass)
+            if (Name != name || Pass != pass)
             {
                 Clear();
                 Bot.SayHello();
@@ -32,10 +32,10 @@ namespace SushiMarcet.Models
             {
                 _bannerPage = "Administotor Page";
 
-                _options = new string[] {"0.View list Sushi",
+                _options = new string[] {"0.View list sushi",
                                          "1.Add sushi",
-                                         "2.Upload Sushi",
-                                         "3.Delete Sushi",
+                                         "2.To change sushi",
+                                         "3.Delete sushi",
                                          "4.View orders" 
                                         };
 
@@ -54,13 +54,13 @@ namespace SushiMarcet.Models
                     BackToPageAdmin();
 
                     break;
-                case "2.Upload Sushi":
+                case "2.Upload sushi":
                     break;
-                case "3.Delete Sushi":
+                case "3.Delete sushi":
                     break;
                 case "4.View orders":
                     break;
-                case "0.View list Sushi":
+                case "0.View list sushi":
                     break;
 
             }
@@ -93,7 +93,7 @@ namespace SushiMarcet.Models
 
         private void BackToPageAdmin()
         {
-            PageAdmin pageAdmin = new(_name,_pass);
+            PageAdmin pageAdmin = new(Name,Pass);
             _ = pageAdmin.Run();
         }
 

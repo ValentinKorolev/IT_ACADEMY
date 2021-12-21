@@ -15,19 +15,14 @@ namespace SushiMarcet.Models
         public string PhoneNumderClient { get; set; }
         public string AdressDeliveryClient { get; set; }
 
-        //public Order(string name, string email, string phoneNumber, string address)
-        //{
-        //    NameClient = name;
-        //    EmailClient = email;
-        //    PhoneNumderClient = phoneNumber;
-        //    AdressDeliveryClient = address;
-
-        //    OrderTime = DateTime.Now;
-        //}
-
-        public Order()
+        public Order(string name, string email, string phoneNumber, string address)
         {
+            NameClient = name;
+            EmailClient = email;
+            PhoneNumderClient = phoneNumber;
+            AdressDeliveryClient = address;
 
+            OrderTime = DateTime.Now;
         }
     }
 }

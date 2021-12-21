@@ -37,10 +37,12 @@ namespace SushiMarcet.Pages
                     while (_isTrue == false || numServings == default);
 
                     _currentSushi.Servings = numServings;
+
                     PageViewingSushi pageOrder = new(_currentSushi);
                     _ = pageOrder.Run();
 
                     break;
+
                 case "Add to cart":
 
                     Cart.Add(_currentSushi);
@@ -53,6 +55,7 @@ namespace SushiMarcet.Pages
                     _ = pageMenuSushi.Run();
 
                     break;
+
                 case "Go back":
                     PageMenuSushi pageMenuSushi1 = new(Observer.currentTypeSushi);
                     _ = pageMenuSushi1.Run();

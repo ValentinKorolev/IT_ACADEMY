@@ -46,7 +46,7 @@ namespace SushiMarcet.Pages
             catch (Exception ex)
             {
                 using ApplicationContext db = new ApplicationContext();
-                return db.Sushi.Where(x => x.Type.Contains(Observer.Uramaki)).ToList();
+                return db.Sushi.Where(_ => _.Type.Contains(Observer.Uramaki)).ToList();
             }            
         }
 
@@ -62,7 +62,7 @@ namespace SushiMarcet.Pages
             catch (Exception ex)
             {
                 using ApplicationContext db = new ApplicationContext();
-                return db.Sushi.Where(x => x.Type.Contains(Observer.Futomaki)).ToList();
+                return db.Sushi.Where(_ => _.Type.Contains(Observer.Futomaki)).ToList();
             }
         }
 
@@ -77,7 +77,7 @@ namespace SushiMarcet.Pages
             catch (Exception ex)
             {
                 using ApplicationContext db = new ApplicationContext();
-                return db.Sushi.Where(x => x.Type.Contains(Observer.Nigiri)).ToList();
+                return db.Sushi.Where(_ => _.Type.Contains(Observer.Nigiri)).ToList();
             }
         }
 
@@ -92,7 +92,7 @@ namespace SushiMarcet.Pages
             catch (Exception ex)
             {
                 using ApplicationContext db = new ApplicationContext();
-                return db.Sushi.Where(x => x.Type.Contains(Observer.BakedSushi)).ToList();
+                return db.Sushi.Where(_ => _.Type.Contains(Observer.BakedSushi)).ToList();
             }
         }
 
@@ -128,7 +128,7 @@ namespace SushiMarcet.Pages
         {
             var fileName = File.ReadAllText(Observer.FileNameSushi);
             var sushis = JsonConvert.DeserializeObject<ListProducts>(fileName);
-            var currentSushiType = sushis.sushiMenu.FindAll(x => x.Type == typeSushi);
+            var currentSushiType = sushis.sushiMenu.FindAll(_ => _.Type == typeSushi);
                          
             return currentSushiType;
         }

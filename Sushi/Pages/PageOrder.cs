@@ -9,82 +9,90 @@ namespace SushiMarcet.Pages
 {
     internal sealed class PageOrder : PageFather
     {
-        private string _nameClient;
-        private string _emailClient;
-        private string _phoneNumberClient;
+        private string _name;
+        private string _email;
+        private string _phoneNumber;
+        private string _adressDelivery;
 
-        public PageOrder(string name = null, string email = null, string phoneNumber= null)
+        public PageOrder(string name = null, string email = null, string phoneNumber= null, string adressDelivery = null)
         {
-            _nameClient = name;
-            _emailClient = email;
-            _phoneNumberClient = phoneNumber;
+            _name = name;
+            _email = email;
+            _phoneNumber = phoneNumber;
+            _adressDelivery = adressDelivery;
 
-            _bannerPage = "Fill in the information about yourself: ";
+            _bannerPage = Cart.ShowTheContents() + Cart.ReturnOrderAmount() + "\n\nFill in the information about yourself: ";
 
-            _options = new string[] {$"Name: {_nameClient}",
-                                     $"Email: {_emailClient}",
-                                     $"Phone number: {_phoneNumberClient}",
-                                     $"Adress delevery: "};
+            _options = new string[] {$"Name: {_name}",
+                                     $"Email: {_email}",
+                                     $"Phone number: {_phoneNumber}",
+                                     $"Adress delivery: {_adressDelivery}",
+                                     $"\nTo order",
+                                     $"Go back"};
         }
-
-        //public PageOrder(string name, string email, string phoneNumber)
-        //{
-
-        //}
 
         protected override void TransferPage(string[] options, int selectedIndex)
         {
             if (options[selectedIndex].Contains("Name"))
             {
-                GetNameClient();
+                GetName();
             }
             else if (options[selectedIndex].Contains("Email"))
             {
-                GetEmailClient();
+                GetEmail();
             }
             else if (options[selectedIndex].Contains("Phone"))
             {
-                GetPhoneNumberClient();
+                GetPhoneNumber();
             }
             else if (options[selectedIndex].Contains("Adress"))
             {
-                GetAdressClient();
+                GetAdressDelivery();
+            }
+            else if (options[selectedIndex].Contains("To order"))
+            {
+
+            }
+            else if (options[selectedIndex].Contains("Go back"))
+            {
+                PageCart pageCart = new PageCart();
+                _ = pageCart.Run();
             }
         }
 
-        private void GetNameClient()
+        private void GetName()
         {
 
             Clear();
             Write("Enter your name: ");
 
-            _nameClient = ReadLine();
+            _name = ReadLine();
 
-            while (string.IsNullOrEmpty(_nameClient)||string.IsNullOrWhiteSpace(_nameClient))
+            while (string.IsNullOrEmpty(_name)||string.IsNullOrWhiteSpace(_name))
             {
                 Clear();
                 WriteLine("This field is mandatory. Please, enter name: ");
-                _nameClient = ReadLine();
+                _name = ReadLine();
             }
 
-            PageRun();
+            PageOrderRun();
         }
 
-        private void GetEmailClient()
+        private void GetEmail()
         {
             Clear();
 
             Write("Enter your email: ");
 
-            _emailClient = ReadLine();
+            _email = ReadLine();
 
-            while (IsValidEmail(_emailClient) == false)
+            while (IsValidEmail(_email) == false)
             {
                 WriteLine("Incorrect enter the email!!!Please, enter email again: ");
-                _emailClient = ReadLine();
+                _email = ReadLine();
             }
 
-            PageRun();
+            PageOrderRun();
         }
 
         private bool IsValidEmail(string email)
@@ -100,55 +108,58 @@ namespace SushiMarcet.Pages
             }
         }
 
-        private void GetPhoneNumberClient()
+        private void GetPhoneNumber()
         {
             Clear();
             Write("Enter your phone number: ");
-            _phoneNumberClient = ReadLine();
+            _phoneNumber = ReadLine();
 
-            while(IsPhoneNumber(_phoneNumberClient) == false)
+            while(IsValidPhoneNumber(_phoneNumber) == false)
             {
                 WriteLine("Incorrect enter the phone number!!!Please, enter phone number again: ");
-                _phoneNumberClient = ReadLine();
+                _phoneNumber = ReadLine();
             }
 
-            PageRun();
+            PageOrderRun();
         }
 
-        private bool IsPhoneNumber(string number)
+        private bool IsValidPhoneNumber(string number)
         {
             return Regex.Match(number, @"^(\+375|80)(29|25|44|33)(\d{3})(\d{2})(\d{2})$").Success;
         }
 
-        private void GetAdressClient()
+        private void GetAdressDelivery()
         {
+            string _city;
+            string _street;
+            string _houseNumber;
+            string _apartment;
+
             Clear();
-            Write("Enter the delivery address: ");
-            _ = ReadLine();
+            WriteLine("Enter the delivery address");
+            WriteLine();
+
+            Write("City: ");
+            _city = ReadLine();
+
+            Write("Street: ");
+            _street = ReadLine();
+
+            Write("House number: ");
+            _houseNumber = ReadLine();
+
+            Write("Apartment (optional): ");
+            _apartment = ReadLine();
+
+            _adressDelivery = $"City: {_city}, House number: {_houseNumber}, Street: {_street}, Apartment: {_apartment}";
+
+            PageOrderRun();
         }
 
-        private void PageRun()
+        private void PageOrderRun()
         {
-            if (string.IsNullOrEmpty(_nameClient) && string.IsNullOrEmpty(_emailClient) && string.IsNullOrEmpty(_phoneNumberClient))
-            {
-                PageOrder pageOrder = new();
-                _ = pageOrder.Run();
-            }
-            else if (_nameClient != null && string.IsNullOrEmpty(_emailClient) && string.IsNullOrEmpty(_phoneNumberClient))
-            {
-                PageOrder pageOrder = new(name: _nameClient);
-                _ = pageOrder.Run();
-            }
-            else if (_nameClient != null && _emailClient != null && string.IsNullOrEmpty(_phoneNumberClient))
-            {
-                PageOrder pageOrder = new(name: _nameClient, email: _emailClient);
-                _ = pageOrder.Run();
-            }
-            else if (_nameClient != null && _emailClient != null && _phoneNumberClient != null)
-            {
-                PageOrder pageOrder = new(name: _nameClient, email: _emailClient, phoneNumber: _phoneNumberClient);
-                _ = pageOrder.Run();
-            }
+                PageOrder pageOrder = new(_name, _email, _phoneNumber, _adressDelivery);
+                _ = pageOrder.Run();           
         }
     }
 }

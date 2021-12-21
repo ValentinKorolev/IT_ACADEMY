@@ -33,19 +33,13 @@ namespace SushiMarcet
         {
             string answer = DesignerString(logLevel, message, exception);
 
-            switch (logLevel)
+            return logLevel switch
             {
-                case LogLevel.INF:
-                    return answer;
-                    break;
-                case LogLevel.DEB:
-                    return answer;
-                    break;
-                case LogLevel.ERR:
-                    return answer;
-                    break;
-                default: return answer;
-            }
+                LogLevel.INF => answer,
+                LogLevel.DEB => answer,
+                LogLevel.ERR => answer,
+                _ => answer,
+            };
         }
         public static void Info(string message)
         {    

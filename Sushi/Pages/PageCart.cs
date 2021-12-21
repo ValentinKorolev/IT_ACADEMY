@@ -11,15 +11,15 @@ namespace SushiMarcet.Pages
       
         public PageCart()
         {
-            if(Cart._cartList.Count == 1)//the basket is initially not empty (contains the string for _bannerPage = "Cart\n")
+            if(Cart.cartList.Count == 0)
             {
                 _bannerPage = "Cart is empty";
                 _options = new string[] {"Go back"};
             }
             else
             {
-                _bannerPage = Cart.ShowTheContents();
-                _options = new string[] {"Make an order", "Go back"};
+                _bannerPage = "Cart\n\n" + Cart.ShowTheContents() + Cart.ReturnOrderAmount();
+                _options = new string[] {"Make an order", "Make changes", "Go back" };
             }            
         }
 
@@ -34,6 +34,10 @@ namespace SushiMarcet.Pages
                 case "Make an order":
                     PageOrder pageOrder = new();
                     _ = pageOrder.Run();
+                    break;
+                case "Make changes":
+                    PageCartChanges pageCartChanges = new();
+                    _ = pageCartChanges.Run();
                     break;
             }
         }
