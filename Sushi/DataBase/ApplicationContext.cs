@@ -10,6 +10,9 @@ namespace SushiMarcet.DataBase
     public class ApplicationContext : DbContext
     {
         internal DbSet<Sushi> Sushi { get; set; }
+        internal DbSet<SauceAndDishes> SauceAndDishes { get; set; }
+        internal DbSet<Drinks> Drinks { get; set; }
+
         public ApplicationContext() => Database.EnsureCreated();
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

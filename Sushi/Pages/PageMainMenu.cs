@@ -20,7 +20,7 @@ namespace SushiMarcet.Models
         {
             _bannerPage = "Menu Sushi Marcet";
             _options = new string[] { $"{Observer.Uramaki}", $"{Observer.Futomaki}", $"{Observer.Nigiri}", $"{Observer.BakedSushi}",
-                                      "Sets","Go Back" };
+                                      "Sets","Sauces and side dishes","Go Back" };
         }
 
         protected override void TransferPage(string[] options, int selectedIndex)
@@ -56,6 +56,8 @@ namespace SushiMarcet.Models
                     Clear();
                     PageMenuSushi pageSets = new(Observer.Sets);
                     _ = pageSets.Run();
+                    break;
+                case "Sauces and side dishes":
                     break;
                 case "Go Back":
                     Clear();

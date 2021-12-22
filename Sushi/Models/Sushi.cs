@@ -36,9 +36,11 @@ namespace SushiMarcet
             return $"{Name}; Number of servings: {Servings}; Price: {Price:c}";
         }
 
-        public string ShowDataForUser()
+        public string ShowDataForAdmin()
         {
-            return "";
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+
+            return $"Id: {Id}| {Name}| Description: {Description}| Servings: {Servings}| Price: {Price:c}";
         }
 
         public string ShowData(int numServings = 1)

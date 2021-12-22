@@ -9,7 +9,8 @@ namespace SushiMarcet.Models
 {
     internal sealed class ListProducts
     {
-        public List<Sushi> sushiMenu { get; set; } = new();
+        public List<Sushi> SushiMenu { get; set; } = new();
+        public List<SauceAndDishes> SauceAndDishesMenu { get; set; } = new();
 
     }
 }

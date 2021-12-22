@@ -128,7 +128,7 @@ namespace SushiMarcet.Pages
         {
             var fileName = File.ReadAllText(Observer.FileNameSushi);
             var sushis = JsonConvert.DeserializeObject<ListProducts>(fileName);
-            var currentSushiType = sushis.sushiMenu.FindAll(_ => _.Type == typeSushi);
+            var currentSushiType = sushis.SushiMenu.FindAll(_ => _.Type == typeSushi);
                          
             return currentSushiType;
         }
