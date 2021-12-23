@@ -17,10 +17,10 @@ namespace SushiMarcet.Models
         {
             get { return _price; }
             set { _price = value * Servings; }
-        }/*=> _price * Servings;*/
+        }
         public int Servings { get; set; }
 
-        public SauceAndDishes(int id,string name, string description, decimal price)
+        public SauceAndDishes(int id,string name, decimal price, string description)
         {
             Id = id;
             Name = name;

@@ -39,7 +39,7 @@ namespace SushiMarcet.Pages
         {
             try
             {
-                var sushi = JsonGetSushi(Observer.Uramaki);
+                var sushi = GetSushiJson(Observer.Uramaki);
                 return sushi;
                 
             }
@@ -55,7 +55,7 @@ namespace SushiMarcet.Pages
 
             try
             {
-                var sushi = JsonGetSushi(Observer.Futomaki);
+                var sushi = GetSushiJson(Observer.Futomaki);
                 return sushi;
 
             }
@@ -70,7 +70,7 @@ namespace SushiMarcet.Pages
         {
             try
             {
-                var sushi = JsonGetSushi(Observer.Nigiri);
+                var sushi = GetSushiJson(Observer.Nigiri);
                 return sushi;
 
             }
@@ -85,7 +85,7 @@ namespace SushiMarcet.Pages
         {
             try
             {
-                var sushi = JsonGetSushi(Observer.BakedSushi);
+                var sushi = GetSushiJson(Observer.BakedSushi);
                 return sushi;
 
             }
@@ -124,7 +124,7 @@ namespace SushiMarcet.Pages
             }
         }
 
-        private IEnumerable<Sushi> JsonGetSushi(string typeSushi)
+        private IEnumerable<Sushi> GetSushiJson(string typeSushi)
         {
             var fileName = File.ReadAllText(Observer.FileNameProduct);
             var sushis = JsonConvert.DeserializeObject<ListProducts>(fileName);

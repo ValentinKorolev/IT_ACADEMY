@@ -142,43 +142,336 @@ namespace SushiMarcet.Models
             }
         }
 
+
+        //CRUD Sauce and side dishes
+
+        //Delete Dishes
         private void DeleteDishes()
         {
-            throw new NotImplementedException();
+            int _dishesId;
+
+            do
+            {
+                Clear();
+                WriteLine("Delete Dishes\n");
+                Write("Enter the Id of the dishes you want to delete: ");
+
+                bool isId = int.TryParse(ReadLine(), out _dishesId);
+
+                WriteLine();
+                WriteLine("Do you want to continue?(Press ESC to go back)");
+
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;
+
+                if (isId == true && keyPressed != ConsoleKey.Escape)
+                {
+                    //DeleteDishesDb(sushiId);
+                    DeleteDishesJson(_dishesId);
+                }
+                else if (keyPressed != ConsoleKey.Escape)
+                {
+                    Clear();
+                    WriteLine("Incorrect input");
+                    Thread.Sleep(2000);
+                }
+
+            } while (keyPressed != ConsoleKey.Escape);
+
+            PageAdminRun("3.Sauces and side dishes");
         }
 
+        private void DeleteDishesJson(int dishesId)
+        {
+            ListProducts model = new ListProducts();
+
+            if (File.Exists(Observer.FileNameProduct))
+            {
+                var fileName = File.ReadAllText(Observer.FileNameProduct);
+                var objectJson = JsonConvert.DeserializeObject<ListProducts>(fileName);
+
+                model.SauceAndDishesMenu= objectJson.SauceAndDishesMenu;
+
+                SauceAndDishes deleteDishes = model.SauceAndDishesMenu.FirstOrDefault(_ => _.Id == dishesId);
+
+                if (deleteDishes != null)
+                {
+                    model.SauceAndDishesMenu.Remove(deleteDishes);
+                    model.DrinksMenu = objectJson.DrinksMenu;
+                    model.SushiMenu = objectJson.SushiMenu;
+
+                    File.Delete(Observer.FileNameProduct);
+
+                    string _jsonObject = JsonConvert.SerializeObject(model);
+                    File.AppendAllText(Observer.FileNameProduct, _jsonObject);
+
+                    Clear();
+                    WriteLine($"Dishes with Id - {dishesId} DELETE");
+                    Thread.Sleep(3000);
+                    PageAdminRun("3.Sauces and side dishes");
+                }
+                else
+                {
+                    Clear();
+                    WriteLine($"There is NO dishes with this Id - {dishesId}");
+                    Thread.Sleep(3000);
+                    PageAdminRun("3.Sauces and side dishes");
+                }
+            }
+            else
+            {
+                Clear();
+                WriteLine("File Products.json NOT FOUND");
+                Thread.Sleep(3000);
+                PageAdminRun("3.Sauces and side dishes");
+            }
+        }
+
+        private void DeleteDishesDb(int dishesId)
+        {
+
+        }
+
+        //Update Dishes
         private void UpdateDishes()
         {
-            throw new NotImplementedException();
+            int _dishesId;
+
+            do
+            {
+                Clear();
+                WriteLine("Update Sushi\n");
+                Write("Enter the Id of the sushi you want to update: ");
+
+                bool isId = int.TryParse(ReadLine(), out _dishesId);
+
+                WriteLine();
+                WriteLine("Do you want to continue?(Press ESC to go back)");
+
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;
+
+                if (isId == true && keyPressed != ConsoleKey.Escape)
+                {
+                    Clear();
+
+                    WriteLine("Enter Name Dishes: ");
+                    _name = ReadLine();
+
+                    WriteLine("Enter Price Dishes: ");
+                    _price = Convert.ToDecimal(ReadLine());
+
+                    WriteLine("Enter Descripion Dishes (500 symbol): ");
+                    _description = ReadLine();
+
+                    //UpdateDishesDb(_dishesId);
+                    UpdateDishesJson(_dishesId);
+                }
+                else if (keyPressed != ConsoleKey.Escape)
+                {
+                    Clear();
+                    WriteLine("Incorrect input");
+                    Thread.Sleep(2000);
+                }
+
+            } while (keyPressed != ConsoleKey.Escape);
+
+            PageAdminRun("3.Sauces and side dishes");
         }
 
+        private void UpdateDishesJson(int dishesId)
+        {
+            ListProducts model = new ListProducts();
+
+            if (File.Exists(Observer.FileNameProduct))
+            {
+                var fileName = File.ReadAllText(Observer.FileNameProduct);
+                var dishesJson = JsonConvert.DeserializeObject<ListProducts>(fileName);
+
+                model.SauceAndDishesMenu = dishesJson.SauceAndDishesMenu;
+
+                SauceAndDishes updateDishes = model.SauceAndDishesMenu.FirstOrDefault(_ => _.Id == dishesId);
+
+                if (updateDishes != null)
+                {
+
+                    SauceAndDishes newDishes = new(dishesId, _name, _price, _description);
+
+                    int index = model.SauceAndDishesMenu.IndexOf(model.SauceAndDishesMenu.FirstOrDefault(_ => _.Id == dishesId));
+                    model.SauceAndDishesMenu[index] = newDishes;
+                    model.DrinksMenu = dishesJson.DrinksMenu;
+                    model.SushiMenu = dishesJson.SushiMenu;
+
+                    File.Delete(Observer.FileNameProduct);
+
+                    string _jsonObject = JsonConvert.SerializeObject(model);
+                    File.AppendAllText(Observer.FileNameProduct, _jsonObject);
+
+                    Clear();
+                    WriteLine($"Dishes with Id - {dishesId} UPDATE");
+                    Thread.Sleep(3000);
+                    PageAdminRun("3.Sauces and side dishes");
+                }
+                else
+                {
+                    Clear();
+                    WriteLine($"There is NO dishe with this Id - {dishesId}");
+                    Thread.Sleep(3000);
+                    PageAdminRun("3.Sauces and side dishes");
+                }
+            }
+            else
+            {
+                Clear();
+                WriteLine("File Products.json NOT FOUND");
+                Thread.Sleep(3000);
+                PageAdminRun("2.Sushi");
+            }
+        }
+
+        private void UpdateDishesDb(int dishesId)
+        {
+
+        }
+
+        //Add Dishes
         private void AddDishes()
         {
-            AddDishesDb();
-            AddDishesJson();
+            do
+            {
+                Clear();
+                WriteLine("Add Dishes\nDo you want to continue?(Press ESC to go back)");
+
+
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;
+
+                if (keyPressed != ConsoleKey.Escape)
+                {
+                    Clear();
+
+                    WriteLine("Enter Id Dishes: ");
+                    _infoId = Convert.ToInt32(ReadLine());
+
+                    WriteLine("Enter Name Dishes: ");
+                    _name = ReadLine();
+
+                    WriteLine("Enter Price Dishes: ");
+                    _price = Convert.ToDecimal(ReadLine());
+
+                    WriteLine("Enter Descripion Dishes (500 symbol): ");
+                    _description = ReadLine();
+
+                    SauceAndDishes dishes = new(_infoId, _name, _price, _description);
+
+                    // AddDishesDb should be the first
+                    AddDishesDb(dishes);
+                    AddDishesJson(dishes);
+
+                    WriteLine($"Dishes: {dishes.ShowDataForAdmin()} - ADDED");
+                }
+
+            } while (keyPressed != ConsoleKey.Escape);
+            
         }
 
-        private void AddDishesJson()
+        private void AddDishesJson(SauceAndDishes dishes)
         {
+            ListProducts model = new ListProducts();
 
+            if (File.Exists(Observer.FileNameProduct))
+            {
+                var fileName = File.ReadAllText(Observer.FileNameProduct);
+                var dishesJson = JsonConvert.DeserializeObject<ListProducts>(fileName);
+
+                model.SushiMenu = dishesJson.SushiMenu;
+                model.DrinksMenu = dishesJson.DrinksMenu;
+                model.SauceAndDishesMenu = dishesJson.SauceAndDishesMenu;
+                model.SauceAndDishesMenu.Add(dishes);
+
+                File.Delete(Observer.FileNameProduct);
+
+                string _jsonObject = JsonConvert.SerializeObject(model);
+                File.AppendAllText(Observer.FileNameProduct, _jsonObject);
+            }
+            else
+            {
+                model.SauceAndDishesMenu.Add(dishes);
+
+                string _jsonObject = JsonConvert.SerializeObject(model);
+
+                File.AppendAllText(Observer.FileNameProduct, _jsonObject);
+            }
         }
 
-        private void AddDishesDb()
+        private void AddDishesDb(SauceAndDishes dishes)
         {
+            using ApplicationContext db = new ApplicationContext();
 
+            try
+            {
+                db.SauceAndDishes.Add(dishes);
+                db.SaveChanges();
+                Logger<PageAdmin>.Debug($"Admin added dishes: {dishes.ShowDataForAdmin()}");
+            }
+            catch (Exception ex)
+            {
+                Logger<PageAdmin>.Error("Read InnerException", ex.InnerException);
+                WriteLine("Error, please look logs!");
+                Thread.Sleep(10000);
+            }
         }
 
+        //View Dishes
         private void ViewListDishes()
         {
-            throw new NotImplementedException();
+            //ViewListDishesFromDb();
+            ViewListDishesFromJson();
         }
 
-        private void PageAdminRun(string currentOption)
+        private void ViewListDishesFromJson()
         {
-            PageAdmin pageAdmin = new(currentOption);
-            _ = pageAdmin.Run();
+            do
+            {
+                Clear();
+                WriteLine("List Sauces and side dishes (Press ESC to go back)");
+                WriteLine();
+
+                if (File.Exists(Observer.FileNameProduct))
+                {
+                    var fileName = File.ReadAllText(Observer.FileNameProduct);
+                    var jsonObject = JsonConvert.DeserializeObject<ListProducts>(fileName);
+
+                    foreach (var product in jsonObject.SauceAndDishesMenu)
+                    {
+                        WriteLine(product.ShowDataForAdmin());
+                        WriteLine();
+                    }
+
+                    ConsoleKeyInfo keyInfo = ReadKey(true);
+                    keyPressed = keyInfo.Key;
+                }
+                else
+                {
+                    WriteLine();
+                    WriteLine("Dishes not found");
+                    Thread.Sleep(2000);
+                    keyPressed = ConsoleKey.Escape;
+                }
+            } while (keyPressed != ConsoleKey.Escape);
+
+            PageAdminRun("3.Sauces and side dishes");
         }
 
+        private void ViewListDishesFromDb()
+        {
+
+        }       
+
+
+        //CRUD with Sushi
+
+        //View Sushi
         private void ViewListSushi()
         {
             //ViewSushiFromDB();
@@ -211,6 +504,8 @@ namespace SushiMarcet.Models
                 {
                     WriteLine();
                     WriteLine("Sushi not found");
+                    Thread.Sleep(2000);
+                    keyPressed = ConsoleKey.Escape;
                 }
             } while (keyPressed != ConsoleKey.Escape);
 
@@ -222,6 +517,7 @@ namespace SushiMarcet.Models
 
         }
 
+        //Add Sushi
         private void AddSushi()
         {
             do
@@ -312,6 +608,7 @@ namespace SushiMarcet.Models
             }
         }
 
+        //Update Sushi
         private void UpdateSushi()
         {
             int sushiId;
@@ -415,6 +712,7 @@ namespace SushiMarcet.Models
 
         }
 
+        //Delete Sushi
         private void DeleteSushi()
         {
             int sushiId;
@@ -503,6 +801,10 @@ namespace SushiMarcet.Models
 
         }
 
+
+        //CRUD with Drinks
+
+        //View Drinks
         private void ViewListDrinks()
         {
             //ViewDrinksFromDb();
@@ -535,6 +837,8 @@ namespace SushiMarcet.Models
                 {
                     WriteLine();
                     WriteLine("Drinks not found");
+                    Thread.Sleep(2000);
+                    keyPressed = ConsoleKey.Escape;
                 }
             } while (keyPressed != ConsoleKey.Escape);
 
@@ -546,6 +850,7 @@ namespace SushiMarcet.Models
 
         }
 
+        //Add Drinks
         private void AddDrinks()
         {
             do
@@ -576,7 +881,7 @@ namespace SushiMarcet.Models
                     Drinks drink = new(_infoId, _name,  _price, _description);
 
                     // AddDrinkToDb should be the first
-                    //AddDrinkToDb(drink);
+                    AddDrinkToDb(drink);
 
                     AddDrinkToJson(drink);
 
@@ -625,7 +930,7 @@ namespace SushiMarcet.Models
             {
                 db.Drinks.Add(drinks);
                 db.SaveChanges();
-                Logger<PageAdmin>.Debug($"Admin added sushi: {drinks.ShowDataForAdmin}");
+                Logger<PageAdmin>.Debug($"Admin added drink: {drinks.ShowDataForAdmin}");
             }
             catch (Exception ex)
             {
@@ -635,6 +940,7 @@ namespace SushiMarcet.Models
             }
         }
 
+        //Update Drinks
         private void UpdateDrinks()
         {
             int drinkId;
@@ -735,6 +1041,7 @@ namespace SushiMarcet.Models
 
         }
 
+        //Delete Drinks
         private void DeleteDrinks()
         {
             int drinkId;
@@ -821,9 +1128,17 @@ namespace SushiMarcet.Models
 
         }
 
+        //Other methods
+
         private void BackToPageAdmin()
         {
             PageAdmin pageAdmin = new(NameAdmin, PassAdmin);
+            _ = pageAdmin.Run();
+        }
+
+        private void PageAdminRun(string currentOption)
+        {
+            PageAdmin pageAdmin = new(currentOption);
             _ = pageAdmin.Run();
         }
     }

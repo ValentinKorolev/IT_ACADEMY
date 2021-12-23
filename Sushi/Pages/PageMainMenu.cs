@@ -10,8 +10,10 @@ namespace SushiMarcet.Models
     {
         public PageMainMenu()
         {
-            if (Observer.nameUser != String.Empty) _bannerPage = $"{Observer.nameUser} what do you want?";
-            else _bannerPage = "What do you want?";
+            if (Observer.nameUser != string.Empty)
+                _bannerPage = $"{Observer.nameUser} what do you want?";
+            else
+                _bannerPage = "What do you want?";
 
             _options = new string[] { "View the menu", "Cart", "Go out" };
         }
@@ -19,8 +21,14 @@ namespace SushiMarcet.Models
         public PageMainMenu(string viewSushiMenu)
         {
             _bannerPage = "Menu Sushi Marcet";
-            _options = new string[] { $"{Observer.Uramaki}", $"{Observer.Futomaki}", $"{Observer.Nigiri}", $"{Observer.BakedSushi}",
-                                      "Sets","Sauces and side dishes","Go Back" };
+            _options = new string[] { $"{Observer.Uramaki}",
+                                      $"{Observer.Futomaki}", 
+                                      $"{Observer.Nigiri}",
+                                      $"{Observer.BakedSushi}",
+                                      "Sets",
+                                      "Drinks",
+                                      "Sauces and side dishes",
+                                      "Go Back" };
         }
 
         protected override void TransferPage(string[] options, int selectedIndex)
@@ -58,6 +66,12 @@ namespace SushiMarcet.Models
                     _ = pageSets.Run();
                     break;
                 case "Sauces and side dishes":
+                    PageMenuDishes pageDishes = new();
+                    _ = pageDishes.Run();
+                    break;
+                case "Drinks":
+                    PageMenuDrinks pageMenuDrinks = new();
+                    _ = pageMenuDrinks.Run();
                     break;
                 case "Go Back":
                     Clear();
