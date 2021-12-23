@@ -11,6 +11,7 @@ namespace SushiMarcet.Models
     {
         public List<Sushi> SushiMenu { get; set; } = new();
         public List<SauceAndDishes> SauceAndDishesMenu { get; set; } = new();
+        public List<Drinks> DrinksMenu { get; set; } = new();
 
     }
 }

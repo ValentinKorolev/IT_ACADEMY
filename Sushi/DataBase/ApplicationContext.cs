@@ -19,5 +19,11 @@ namespace SushiMarcet.DataBase
         {
             optionsBuilder.UseSqlServer(@"Data Source = DESKTOP-22958VE\SQLEXPRESS;Initial Catalog=SushiMarcet;Integrated Security=True;TrustServerCertificate=true");
         }
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<Sushi>();
+        //    modelBuilder.Entity<SauceAndDishes>();
+        //    modelBuilder.Entity<Drinks>();
+        //}
     }
 }

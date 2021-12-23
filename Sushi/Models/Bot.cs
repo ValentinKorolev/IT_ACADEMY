@@ -65,13 +65,18 @@ namespace SushiMarcet
 
             if (keyPressed == ConsoleKey.F12)
             {
-                WriteLine("name: ");
-                string _name = ReadLine();
-                WriteLine("pass: ");
-                string _pass = ReadLine();
-
-                PageAdmin admin = new PageAdmin(_name,_pass);
+                string _name = "Admin123";
+                string _pass = "122345";
+                PageAdmin admin = new PageAdmin( _name, _pass);
                 _ = admin.Run();
+
+                //WriteLine("name: ");
+                //string _name = ReadLine();
+                //WriteLine("pass: ");
+                //string _pass = ReadLine();
+
+                //PageAdmin admin = new PageAdmin(_name,_pass);
+                //_ = admin.Run();
             }
         }
     }

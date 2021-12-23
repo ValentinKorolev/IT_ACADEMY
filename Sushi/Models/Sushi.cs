@@ -14,9 +14,11 @@ namespace SushiMarcet
         public string Type { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public decimal Price => _price * Servings;
-
-        [NotMapped]
+        public decimal Price
+        {
+            get { return _price; }
+            set { _price = value * Servings; }
+        }/*=> _price * Servings;*/
         public int Servings { get; set; }
 
         public Sushi(int id,string type, string name, decimal price, string description)

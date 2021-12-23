@@ -126,7 +126,7 @@ namespace SushiMarcet.Pages
 
         private IEnumerable<Sushi> JsonGetSushi(string typeSushi)
         {
-            var fileName = File.ReadAllText(Observer.FileNameSushi);
+            var fileName = File.ReadAllText(Observer.FileNameProduct);
             var sushis = JsonConvert.DeserializeObject<ListProducts>(fileName);
             var currentSushiType = sushis.SushiMenu.FindAll(_ => _.Type == typeSushi);
                          
