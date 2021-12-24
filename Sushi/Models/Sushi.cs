@@ -16,9 +16,9 @@ namespace SushiMarcet
         public string Description { get; set; }
         public decimal Price
         {
-            get { return _price; }
-            set { _price = value * Servings; }
-        }/*=> _price * Servings;*/
+            get { return _price * Servings; }
+            set { _price = value; }
+        }
         public int Servings { get; set; }
 
         public Sushi(int id,string type, string name, decimal price, string description)

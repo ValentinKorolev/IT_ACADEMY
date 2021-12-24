@@ -15,8 +15,8 @@ namespace SushiMarcet.Models
         public string Description { get; set; }
         public decimal Price
         {
-            get { return _price; }
-            set { _price = value * Servings; }
+            get { return _price * Servings; }
+            set { _price = value; }
         }/*=> _price * Servings;*/
         public int Servings { get; set; }
 
@@ -41,6 +41,15 @@ namespace SushiMarcet.Models
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
 
             return $"Id: {Id}| {Name}| Description: {Description}| Servings: {Servings}| Price: {Price:c}";
+        }
+
+        public string ShowData(int numServings = 1)
+        {
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+
+            return Servings == numServings || Servings == 0
+                ? $"{Name}; Description: {Description}; Price: {Price:c}"
+                : $"{Name}; Description: {Description}; Servings: {Servings} Price: {Price:c}";
         }
     }
 }

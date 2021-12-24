@@ -118,8 +118,8 @@ namespace SushiMarcet.Pages
                     _ = pageMainMenu.Run();
                     break;
                 default:
-                    PageViewingSushi pageOrder = new(_sushis.ElementAt(selectedIndex));
-                    _ = pageOrder.Run();
+                    PageViewingProduct pageViewingProduct = new(_sushis.ElementAt(selectedIndex));
+                    _ = pageViewingProduct.Run();
                     break;
             }
         }

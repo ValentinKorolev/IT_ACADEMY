@@ -64,9 +64,10 @@ namespace SushiMarcet.Pages
                     _ = pageMainMenu.Run();
                     break;
                 default:
+                    PageViewingProduct pageViewingProduct = new(_dishes.ElementAt(selectedIndex));
+                    _ = pageViewingProduct.Run();
                     break;
-            }
-                
+            }                
         }
     }
 }
