@@ -89,7 +89,9 @@ namespace SushiMarcet.Pages
                 _currentDrinks.Servings = numServings;
 
                 PageViewingProduct pageViewingProduct = new(_currentDrinks);
+
                 _currentDrinks = null;
+
                 _ = pageViewingProduct.Run();
             }
         }

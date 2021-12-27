@@ -14,6 +14,7 @@ namespace SushiMarcet.Models
 
         public static string ShowTheContents()
         {
+
             StringBuilder sb = new();
 
             foreach (var content in cartList)

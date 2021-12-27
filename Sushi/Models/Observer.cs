@@ -11,7 +11,8 @@ namespace SushiMarcet.Models
         public static string nameUser;
         public static string currentTypeSushi;
 
-        public const string FileNameProduct = "Products.json";     
+        public const string FileNameProduct = "Products.json";
+        public const string FileNameOrders = "Orders.json";
 
         public const string Uramaki ="Uramaki";
         public const string Futomaki = "Futomaki";

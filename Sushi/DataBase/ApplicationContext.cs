@@ -11,7 +11,9 @@ namespace SushiMarcet.DataBase
     {
         internal DbSet<Sushi> Sushi { get; set; }
         internal DbSet<SauceAndDishes> SauceAndDishes { get; set; }
+        internal DbSet<Order> Order { get; set; }
         internal DbSet<Drinks> Drinks { get; set; }
+        
 
         public ApplicationContext() => Database.EnsureCreated();
 
@@ -19,11 +21,13 @@ namespace SushiMarcet.DataBase
         {
             optionsBuilder.UseSqlServer(@"Data Source = DESKTOP-22958VE\SQLEXPRESS;Initial Catalog=SushiMarcet;Integrated Security=True;TrustServerCertificate=true");
         }
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<Sushi>();
-        //    modelBuilder.Entity<SauceAndDishes>();
-        //    modelBuilder.Entity<Drinks>();
-        //}
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Sushi>();
+            modelBuilder.Entity<SauceAndDishes>();
+            modelBuilder.Entity<Drinks>();
+            modelBuilder.Entity<Order>();
+        }
     }
 }

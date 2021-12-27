@@ -14,7 +14,7 @@ class Programm
         }
         catch (Exception ex)
         {
-
+            Logger<Programm>.Error(" ", ex.InnerException);
         }
         finally
         {

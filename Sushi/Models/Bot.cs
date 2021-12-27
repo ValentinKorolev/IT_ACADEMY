@@ -8,13 +8,14 @@ namespace SushiMarcet
 {
     public static class Bot
     {
-        static readonly TimeSpan currentTime = DateTime.Now.TimeOfDay;
-        static readonly TimeSpan _timeMorning = new(0, 9, 0, 0);
-        static readonly TimeSpan _timeDay = new(0, 12, 0, 0);
-        static readonly TimeSpan _timeEvening = new(0, 17, 0, 0);
-        static readonly TimeSpan _timeNight = new(0, 22, 0, 0);
-        static ConsoleKeyInfo keyInfo;
-        static ConsoleKey keyPressed;
+        private static readonly TimeSpan currentTime = DateTime.Now.TimeOfDay;
+        private static readonly TimeSpan _timeMorning = new(0, 9, 0, 0);
+        private static readonly TimeSpan _timeDay = new(0, 12, 0, 0);
+        private static readonly TimeSpan _timeEvening = new(0, 17, 0, 0);
+        private static readonly TimeSpan _timeNight = new(0, 22, 0, 0);
+
+        private static ConsoleKeyInfo keyInfo;
+        private static ConsoleKey keyPressed;
 
         public static void SayHello()
         {
@@ -41,7 +42,7 @@ namespace SushiMarcet
             keyInfo = ReadKey();
             keyPressed = keyInfo.Key;
 
-            Admin(keyPressed);
+            PageAdminRun(keyPressed);
         }
 
         public static void AskNameUser()
@@ -59,7 +60,7 @@ namespace SushiMarcet
             _ = menu.Run();
         }
 
-        public static void Admin(ConsoleKey keyPressed)
+        public static void PageAdminRun(ConsoleKey keyPressed)
         {
             Clear ();
 

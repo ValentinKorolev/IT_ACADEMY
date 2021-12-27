@@ -45,8 +45,10 @@ namespace SushiMarcet.Pages
             }
             catch (Exception ex)
             {
-                using ApplicationContext db = new ApplicationContext();
-                return db.Sushi.Where(_ => _.Type.Contains(Observer.Uramaki)).ToList();
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    return db.Sushi.Where(_ => _.Type.Contains(Observer.Uramaki)).ToList();
+                }                
             }            
         }
 
@@ -61,8 +63,11 @@ namespace SushiMarcet.Pages
             }
             catch (Exception ex)
             {
-                using ApplicationContext db = new ApplicationContext();
-                return db.Sushi.Where(_ => _.Type.Contains(Observer.Futomaki)).ToList();
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    return db.Sushi.Where(_ => _.Type.Contains(Observer.Futomaki)).ToList();
+                }
+                
             }
         }
 
@@ -76,8 +81,10 @@ namespace SushiMarcet.Pages
             }
             catch (Exception ex)
             {
-                using ApplicationContext db = new ApplicationContext();
-                return db.Sushi.Where(_ => _.Type.Contains(Observer.Nigiri)).ToList();
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    return db.Sushi.Where(_ => _.Type.Contains(Observer.Nigiri)).ToList();
+                }                
             }
         }
 
@@ -91,8 +98,10 @@ namespace SushiMarcet.Pages
             }
             catch (Exception ex)
             {
-                using ApplicationContext db = new ApplicationContext();
-                return db.Sushi.Where(_ => _.Type.Contains(Observer.BakedSushi)).ToList();
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    return db.Sushi.Where(_ => _.Type.Contains(Observer.BakedSushi)).ToList();
+                }                 
             }
         }
 
