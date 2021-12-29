@@ -12,6 +12,7 @@ namespace SushiMarcet.Models
         protected int _selectedIndex;
         protected string _bannerPage;
         protected ConsoleKey keyPressed;
+
         private void DisplayOptions()
         {
             WriteLine();

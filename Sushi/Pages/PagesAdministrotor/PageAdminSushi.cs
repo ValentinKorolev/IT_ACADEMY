@@ -58,17 +58,26 @@ namespace SushiMarcet.Pages
         //View Sushi
         private void ViewListSushi()
         {
-            //ViewSushiFromDB();
-            ViewSushiFromJson();
-        }
-
-        private void ViewSushiFromJson()
-        {
             do
             {
                 Clear();
                 WriteLine("List Sushi (Press ESC to go back)");
                 WriteLine();
+
+                ViewSushiFromDB();
+                //ViewSushiFromJson();
+
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;
+              
+            } while (keyPressed != ConsoleKey.Escape);
+
+            PageAdminSushiRun();
+        }
+
+        private void ViewSushiFromJson()
+        {
+           
 
                 if (File.Exists(Observer.FileNameProduct))
                 {
@@ -80,25 +89,31 @@ namespace SushiMarcet.Pages
                         WriteLine(product.ShowDataForAdmin());
                         WriteLine();
                     }
-
-                    ConsoleKeyInfo keyInfo = ReadKey(true);
-                    keyPressed = keyInfo.Key;
                 }
                 else
                 {
                     WriteLine();
                     WriteLine("Sushi not found");
-                    Thread.Sleep(2000);
-                    keyPressed = ConsoleKey.Escape;
-                }
-            } while (keyPressed != ConsoleKey.Escape);
+                    Thread.Sleep(4000);
 
-            PageAdminSushiRun();
+                    PageAdminSushiRun();
+            }            
         }
 
         private void ViewSushiFromDB()
         {
+            List<Sushi> sushis = new List<Sushi>();
 
+            using(ApplicationContext db = new ApplicationContext())
+            {
+                sushis = db.Sushi.ToList();
+
+                foreach (var sushi in sushis)
+                {
+                    WriteLine(sushi.ShowDataForAdmin());
+                    WriteLine();
+                }
+            }
         }
 
         //Add Sushi
@@ -136,7 +151,6 @@ namespace SushiMarcet.Pages
 
                     // AddSushiToDB should be the first
                     AddSushiToDB(sushi);
-
                     AddSushiToJson(sushi);
 
                     WriteLine($"Sushi: {sushi.ShowDataForAdmin()} - ADDED");
@@ -226,7 +240,7 @@ namespace SushiMarcet.Pages
                     WriteLine("Enter Descripion Sushi (200 symbol): ");
                     _description = ReadLine();
 
-                    //UpdateSushiDb(int sushiId);
+                    UpdateSushiDb(sushiId);
                     UpdateSushiJson(sushiId);
                 }
                 else if (keyPressed != ConsoleKey.Escape)
@@ -277,7 +291,7 @@ namespace SushiMarcet.Pages
                 else
                 {
                     Clear();
-                    WriteLine($"There is NO sushi with this Id - {sushiId}");
+                    WriteLine($"Sushi with Id - ({sushiId}) NOT FOUND in file json");
                     Thread.Sleep(3000);
                     PageAdminSushiRun();
                 }
@@ -293,7 +307,26 @@ namespace SushiMarcet.Pages
 
         private void UpdateSushiDb(int sushiId)
         {
+            try
+            {
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    Sushi updateSushi = db.Sushi.FirstOrDefault(_ => _.Id == sushiId);
+                    updateSushi.Name = _name;
+                    updateSushi.Type = _type;
+                    updateSushi.Price = _price;
+                    updateSushi.Description = _description;
 
+                    db.SaveChanges();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Clear();
+                WriteLine($"Sushi with Id - ({sushiId}) NOT FOUND in DataBase");
+                Thread.Sleep(3000);
+            }
         }
 
         //Delete Sushi
@@ -317,7 +350,7 @@ namespace SushiMarcet.Pages
 
                 if (isId == true && keyPressed != ConsoleKey.Escape)
                 {
-                    //DeleteSushiDb(sushiId);
+                    DeleteSushiDb(sushiId);
                     DeleteSushiJson(sushiId);
                 }
                 else if (keyPressed != ConsoleKey.Escape)
@@ -335,7 +368,24 @@ namespace SushiMarcet.Pages
 
         private void DeleteSushiDb(int sushiId)
         {
+            try
+            {
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    Sushi deleteSushi = db.Sushi.FirstOrDefault(_ => _.Id == sushiId);
 
+                    db.Sushi.Remove(deleteSushi);
+                    db.SaveChanges();
+                }
+
+            }
+            catch(Exception ex)
+            {
+                Clear();
+                WriteLine($"Sushi with Id - ({sushiId}) NOT FOUND in DataBase");
+                Thread.Sleep(3000);
+            }
+           
         }
 
         private void DeleteSushiJson(int sushiId)
@@ -370,7 +420,7 @@ namespace SushiMarcet.Pages
                 else
                 {
                     Clear();
-                    WriteLine($"There is NO sushi with this Id - {sushiId}");
+                    WriteLine($"Sushi with Id - ({sushiId}) NOT FOUND in file json");
                     Thread.Sleep(3000);
                     PageAdminSushiRun();
                 }

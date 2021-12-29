@@ -42,7 +42,7 @@ namespace SushiMarcet.Pages
                     break;
                 case "1.Add drinks":
                     AddDrinks();
-                    PageAdminDishesRun();
+                    PageAdminDrinksRun();
                     break;
                 case "2.Update drinks":
                     UpdateDrinks();
@@ -58,18 +58,25 @@ namespace SushiMarcet.Pages
         //View Drinks
         private void ViewListDrinks()
         {
-            //ViewDrinksFromDb();
-            ViewDrinksFromJson();
-        }
-
-        private void ViewDrinksFromJson()
-        {
             do
             {
                 Clear();
                 WriteLine("List Drinks (Press ESC to go back)");
                 WriteLine();
 
+                //ViewDrinksFromDb();
+                ViewDrinksFromJson();
+
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;                    
+                
+            } while (keyPressed != ConsoleKey.Escape);
+
+            PageAdminDrinksRun();
+        }
+
+        private void ViewDrinksFromJson()
+        {
                 if (File.Exists(Observer.FileNameProduct))
                 {
                     var fileName = File.ReadAllText(Observer.FileNameProduct);
@@ -80,25 +87,30 @@ namespace SushiMarcet.Pages
                         WriteLine(product.ShowDataForAdmin());
                         WriteLine();
                     }
-
-                    ConsoleKeyInfo keyInfo = ReadKey(true);
-                    keyPressed = keyInfo.Key;
                 }
                 else
                 {
                     WriteLine();
                     WriteLine("Drinks not found");
                     Thread.Sleep(2000);
-                    keyPressed = ConsoleKey.Escape;
-                }
-            } while (keyPressed != ConsoleKey.Escape);
-
-            PageAdminDishesRun();
+                    PageAdminDrinksRun();
+                }    
         }
 
         private void ViewDrinksFromDb()
         {
+            List<Drinks> drinks = new List<Drinks>();
 
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                drinks = db.Drinks.ToList();
+
+                foreach (var drink in drinks)
+                {
+                    WriteLine(drink.ShowDataForAdmin());
+                    WriteLine();
+                }
+            }
         }
 
         //Add Drinks
@@ -133,7 +145,6 @@ namespace SushiMarcet.Pages
 
                     // AddDrinkToDb should be the first
                     AddDrinkToDb(drink);
-
                     AddDrinkToJson(drink);
 
                     WriteLine($"Drink: {drink.ShowDataForAdmin()} - ADDED");
@@ -222,7 +233,7 @@ namespace SushiMarcet.Pages
                     WriteLine("Enter Descripion Drink (200 symbol): ");
                     _description = ReadLine();
 
-                    //UpdateDrinksDb(sushiId);
+                    UpdateDrinksDb(drinkId);
                     UpdateDrinksJson(drinkId);
                 }
                 else if (keyPressed != ConsoleKey.Escape)
@@ -234,7 +245,7 @@ namespace SushiMarcet.Pages
 
             } while (keyPressed != ConsoleKey.Escape);
 
-            PageAdminDishesRun();
+            PageAdminDrinksRun();
         }
 
         private void UpdateDrinksJson(int drinkId)
@@ -269,14 +280,14 @@ namespace SushiMarcet.Pages
                     Clear();
                     WriteLine($"Drink with Id - {drinkId} UPDATE");
                     Thread.Sleep(3000);
-                    PageAdminDishesRun();
+                    PageAdminDrinksRun();
                 }
                 else
                 {
                     Clear();
-                    WriteLine($"There is NO drink with this Id - {drinkId}");
+                    WriteLine($"Drink with Id - ({drinkId}) NOT FOUND in file json");
                     Thread.Sleep(3000);
-                    PageAdminDishesRun();
+                    PageAdminDrinksRun();
                 }
             }
             else
@@ -284,13 +295,30 @@ namespace SushiMarcet.Pages
                 Clear();
                 WriteLine("File Products.json NOT FOUND");
                 Thread.Sleep(3000);
-                PageAdminDishesRun();
+                PageAdminDrinksRun();
             }
         }
 
         private void UpdateDrinksDb(int drinkId)
         {
+            try
+            {
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    Drinks updateDrink = db.Drinks.FirstOrDefault(_ => _.Id == drinkId);
+                    updateDrink.Name = _name;
+                    updateDrink.Price = _price;
+                    updateDrink.Description = _description;
 
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Clear();
+                WriteLine($"Drink with Id - ({drinkId}) NOT FOUND in DataBase");
+                Thread.Sleep(3000);
+            }
         }
 
         //Delete Drinks
@@ -314,7 +342,7 @@ namespace SushiMarcet.Pages
 
                 if (isId == true && keyPressed != ConsoleKey.Escape)
                 {
-                    //DeleteDrinkDb(drinkId);
+                    DeleteDrinkDb(drinkId);
                     DeleteDrinkJson(drinkId);
                 }
                 else if (keyPressed != ConsoleKey.Escape)
@@ -326,7 +354,7 @@ namespace SushiMarcet.Pages
 
             } while (keyPressed != ConsoleKey.Escape);
 
-            PageAdminDishesRun();
+            PageAdminDrinksRun();
         }
 
         private void DeleteDrinkJson(int drinkId)
@@ -356,14 +384,14 @@ namespace SushiMarcet.Pages
                     Clear();
                     WriteLine($"Drink with Id - {drinkId} DELETE");
                     Thread.Sleep(3000);
-                    PageAdminDishesRun();
+                    PageAdminDrinksRun();
                 }
                 else
                 {
                     Clear();
-                    WriteLine($"There is NO drink with this Id - {drinkId}");
+                    WriteLine($"Drink with Id - ({drinkId}) NOT FOUND in file json");
                     Thread.Sleep(3000);
-                    PageAdminDishesRun();
+                    PageAdminDrinksRun();
                 }
             }
             else
@@ -371,13 +399,29 @@ namespace SushiMarcet.Pages
                 Clear();
                 WriteLine("File Products.json NOT FOUND");
                 Thread.Sleep(3000);
-                PageAdminDishesRun();
+                PageAdminDrinksRun();
             }
         }
 
-        private void DeleteDrinkDb()
+        private void DeleteDrinkDb(int drinkId)
         {
+            try
+            {
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    Drinks deleteDrink = db.Drinks.FirstOrDefault(_ => _.Id == drinkId);
 
+                    db.Drinks.Remove(deleteDrink);
+                    db.SaveChanges();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Clear();
+                WriteLine($"Drink with Id - ({drinkId}) NOT FOUND in DataBase");
+                Thread.Sleep(3000);
+            }            
         }
 
         //Other methods
@@ -388,10 +432,10 @@ namespace SushiMarcet.Pages
             _ = pageAdmin.Run();
         }
 
-        private void PageAdminDishesRun()
+        private void PageAdminDrinksRun()
         {
-            PageAdminDishes pageAdminDishes = new();
-            _ = pageAdminDishes.Run();
+            PageAdminDrinks pageAdminDrinks = new PageAdminDrinks();
+            _ = pageAdminDrinks.Run();
         }
 
     }

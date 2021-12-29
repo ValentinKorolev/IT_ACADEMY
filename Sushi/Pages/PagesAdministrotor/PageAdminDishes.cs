@@ -75,7 +75,7 @@ namespace SushiMarcet.Pages
 
                 if (isId == true && keyPressed != ConsoleKey.Escape)
                 {
-                    //DeleteDishesDb(sushiId);
+                    DeleteDishesDb(_dishesId);
                     DeleteDishesJson(_dishesId);
                 }
                 else if (keyPressed != ConsoleKey.Escape)
@@ -122,7 +122,7 @@ namespace SushiMarcet.Pages
                 else
                 {
                     Clear();
-                    WriteLine($"There is NO dishes with this Id - {dishesId}");
+                    WriteLine($"Dish with Id - ({dishesId}) NOT FOUND in file json");
                     Thread.Sleep(3000);
                     PageAdminDishesRun();
                 }
@@ -138,7 +138,22 @@ namespace SushiMarcet.Pages
 
         private void DeleteDishesDb(int dishesId)
         {
+            try
+            {
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    SauceAndDishes deleteDish = db.SauceAndDishes.FirstOrDefault(_ => _.Id == dishesId);
 
+                    db.SauceAndDishes.Remove(deleteDish);
+                    db.SaveChanges();
+                }
+
+            }catch (Exception ex)
+            {
+                Clear();
+                WriteLine($"Dish with Id - ({dishesId}) NOT FOUND in DataBase");
+                Thread.Sleep(3000);
+            }            
         }
 
         //Update Dishes
@@ -173,7 +188,7 @@ namespace SushiMarcet.Pages
                     WriteLine("Enter Descripion Dishes (500 symbol): ");
                     _description = ReadLine();
 
-                    //UpdateDishesDb(_dishesId);
+                    UpdateDishesDb(_dishesId);
                     UpdateDishesJson(_dishesId);
                 }
                 else if (keyPressed != ConsoleKey.Escape)
@@ -224,7 +239,7 @@ namespace SushiMarcet.Pages
                 else
                 {
                     Clear();
-                    WriteLine($"There is NO dishe with this Id - {dishesId}");
+                    WriteLine($"Dish with Id - ({dishesId}) NOT FOUND in file json");
                     Thread.Sleep(3000);
                     PageAdminDishesRun();
                 }
@@ -240,6 +255,24 @@ namespace SushiMarcet.Pages
 
         private void UpdateDishesDb(int dishesId)
         {
+            try
+            {
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    SauceAndDishes updateDishes = db.SauceAndDishes.FirstOrDefault(_ => _.Id == dishesId);
+                    updateDishes.Name = _name;
+                    updateDishes.Price = _price;
+                    updateDishes.Description = _description;
+
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Clear();
+                WriteLine($"Dish with Id - ({dishesId}) NOT FOUND in DataBase");
+                Thread.Sleep(3000);
+            }
 
         }
 
@@ -335,47 +368,62 @@ namespace SushiMarcet.Pages
         //View Dishes
         private void ViewListDishes()
         {
-            //ViewListDishesFromDb();
-            ViewListDishesFromJson();
-        }
-
-        private void ViewListDishesFromJson()
-        {
             do
             {
                 Clear();
                 WriteLine("List Sauces and side dishes (Press ESC to go back)");
                 WriteLine();
 
-                if (File.Exists(Observer.FileNameProduct))
-                {
-                    var fileName = File.ReadAllText(Observer.FileNameProduct);
-                    var jsonObject = JsonConvert.DeserializeObject<ListProducts>(fileName);
-
-                    foreach (var product in jsonObject.SauceAndDishesMenu)
-                    {
-                        WriteLine(product.ShowDataForAdmin());
-                        WriteLine();
-                    }
-
-                    ConsoleKeyInfo keyInfo = ReadKey(true);
-                    keyPressed = keyInfo.Key;
-                }
-                else
-                {
-                    WriteLine();
-                    WriteLine("Dishes not found");
-                    Thread.Sleep(2000);
-                    keyPressed = ConsoleKey.Escape;
-                }
+                ViewListDishesFromDb();
+                //ViewListDishesFromJson();
+                
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;                
+               
             } while (keyPressed != ConsoleKey.Escape);
 
             PageAdminDishesRun();
         }
 
-        private void ViewListDishesFromDb()
+        private void ViewListDishesFromJson()
         {
 
+
+            if (File.Exists(Observer.FileNameProduct))
+            {
+                var fileName = File.ReadAllText(Observer.FileNameProduct);
+                var jsonObject = JsonConvert.DeserializeObject<ListProducts>(fileName);
+
+                foreach (var product in jsonObject.SauceAndDishesMenu)
+                {
+                    WriteLine(product.ShowDataForAdmin());
+                    WriteLine();
+                }
+            }
+            else
+            {
+                Clear();
+                WriteLine("Dishes not found");
+                Thread.Sleep(4000);
+
+                PageAdminDishesRun();
+            }
+        }
+
+        private void ViewListDishesFromDb()
+        {
+            List<SauceAndDishes> dishes = new List<SauceAndDishes>();
+
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                dishes = db.SauceAndDishes.ToList();
+
+                foreach (var dish in dishes)
+                {
+                    WriteLine(dish.ShowDataForAdmin());
+                    WriteLine();
+                }
+            }
         }
 
         private void BackToPageAdmin()

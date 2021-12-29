@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="Exception\" />
+    <Folder Include="Interfaces\" />
   </ItemGroup>
 
 </Project>

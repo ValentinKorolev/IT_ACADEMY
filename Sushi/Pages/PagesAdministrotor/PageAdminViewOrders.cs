@@ -12,6 +12,7 @@ namespace SushiMarcet.Pages.PagesAdministrotor
     internal sealed class PageAdminViewOrders : PageFather
     {
         private Order _currentOrder;  
+
         public PageAdminViewOrders(Order order)
         {
             _currentOrder = order;
@@ -30,6 +31,7 @@ namespace SushiMarcet.Pages.PagesAdministrotor
                     BackToPageAdminOrders();
                     break;
                 case "Reject an order":
+                    RejectAnOrder(_currentOrder);
                     break;
                 case "Go back":
                     BackToPageAdminOrders();
@@ -39,57 +41,78 @@ namespace SushiMarcet.Pages.PagesAdministrotor
 
         private void AcceptTheOrder(Order order)
         {
-            SendMessageAccepted(order);
+            SendMessage(order);
             order.Status = StatusOrder.Accepted;
+            UpdateDateOrder(order);
 
             Clear();
             WriteLine("An order acceptance letter has been sent");
             Thread.Sleep(4000);
         }
 
-        private void SendMessageAccepted(Order order)
-        {
-            string textMessage = "Your order is accepted\n" + $"{order.Cheque}" + $"\nYour order number: {order.Id}";
+        //private void SendMessageAccepted(Order order)
+        //{
+        //    string textMessage = "Your order is accepted\n" + $"{order.Cheque}" + $"\nYour order number: {order.Id}";
 
-            // отправитель - устанавливаем адрес и отображаемое в письме имя
-            MailAddress from = new MailAddress("sush1marcet@gmail.com", "Administrator Sushi Marcet");
-            // кому отправляем
-            MailAddress to = new MailAddress(order.EmailClient);
-            // создаем объект сообщения
-            MailMessage m = new MailMessage(from, to);
-            // тема письма
-            m.Subject = "Order Notification";
-            // текст письма
-            m.Body = textMessage;
+        //    // отправитель - устанавливаем адрес и отображаемое в письме имя
+        //    MailAddress from = new MailAddress("sush1marcet@gmail.com", "Administrator Sushi Marcet");
+        //    // кому отправляем
+        //    MailAddress to = new MailAddress(order.EmailClient);
+        //    // создаем объект сообщения
+        //    MailMessage m = new MailMessage(from, to);
+        //    // тема письма
+        //    m.Subject = "Order Notification";
+        //    // текст письма
+        //    m.Body = textMessage;
             
-            // адрес smtp-сервера и порт, с которого будем отправлять письмо
-            SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
-            // логин и пароль
-            smtp.Credentials = new NetworkCredential("sush1marcet@gmail.com", "VhGfTgOy6D");
-            smtp.EnableSsl = true;
-            smtp.Send(m);
-            smtp.Dispose();
-        }
+        //    // адрес smtp-сервера и порт, с которого будем отправлять письмо
+        //    SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+        //    // логин и пароль
+        //    smtp.Credentials = new NetworkCredential("sush1marcet@gmail.com", "VhGfTgOy6D");
+        //    smtp.EnableSsl = true;
+        //    smtp.Send(m);
+        //    smtp.Dispose();
+        //}
 
         private void UpdateDateOrder(Order order)
         {
-
+            UpdateDateOrderDb(order);
+            UpdateDateOrderJson(order);
+            
         }
 
         private void UpdateDateOrderJson(Order order)
         {
-            List<Order> orders = new List<Order>();
+            ListOrders model = new ListOrders();
 
             if (File.Exists(Observer.FileNameOrders))
             {
                 var fileName = File.ReadAllText(Observer.FileNameOrders);
-                var ordersJson = JsonConvert.DeserializeObject<ListProducts>(fileName);
+                var ordersJson = JsonConvert.DeserializeObject<ListOrders>(fileName);
+
+                model.Orders = ordersJson.Orders;
+
+                int index = model.Orders.IndexOf(model.Orders.FirstOrDefault(_ => _.Id == order.Id));
+                model.Orders[index] = order;
+            }
+            else
+            {
+                Clear();
+                WriteLine("File Orders.json not found");
+                Thread.Sleep(4000);
+
+                BackToPageAdminOrders();
             }
         }
 
         private void UpdateDateOrderDb(Order order)
         {
-
+            using(ApplicationContext db = new ApplicationContext())
+            {
+                Order updateOrder = db.Order.FirstOrDefault(_ => _.Id == order.Id);
+                updateOrder.Status = order.Status;
+                db.SaveChanges();
+            }
         }
 
         private void RejectAnOrder(Order order)
@@ -100,33 +123,64 @@ namespace SushiMarcet.Pages.PagesAdministrotor
                 WriteLine("Write the reason for the refusal\n");
 
                 string message = ReadLine();
-                
+
+                WriteLine();
+                WriteLine("Do you want to continue?(Press ESC to go back)");
 
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
 
+                SendMessage(order, message);
+
+                order.Status = StatusOrder.Rejected;
+
+                UpdateDateOrder(order);
+
+                Clear();
+                WriteLine($"Order with id: {order.Id} - REJECTED");
+                Thread.Sleep(4000);
+
+                BackToPageAdminOrders();
 
             } while (keyPressed != ConsoleKey.Escape);
+
+            BackToPageAdminOrders();
         }
 
-        private void SendMessageReject(Order order)
+        private void SendMessage(Order order, string message = null)
         {
-            string textMessage = "Your order has been rejected";
+            string textMessage;
 
-            // отправитель - устанавливаем адрес и отображаемое в письме имя
+            if (message is not null)
+            {
+                 textMessage = message;
+            }
+            else
+            {
+                textMessage = "Your order is accepted\n" + $"{order.Cheque}" + $"\nYour order number: {order.Id}";
+            }
+            
+
             MailAddress from = new MailAddress("sush1marcet@gmail.com", "Administrator Sushi Marcet");
-            // кому отправляем
-            MailAddress to = new MailAddress(order.EmailClient);
-            // создаем объект сообщения
-            MailMessage m = new MailMessage(from, to);
-            // тема письма
-            m.Subject = "Your order has been rejected";
-            // текст письма
-            m.Body = textMessage;
 
-            // адрес smtp-сервера и порт, с которого будем отправлять письмо
+            MailAddress to = new MailAddress(order.EmailClient);
+
+            MailMessage m = new MailMessage(from, to);
+
+
+            if (message is not null)
+            {
+                m.Subject = "Your order has been rejected";
+            }
+            else
+            {
+                m.Subject = "Order Notification";
+            }            
+            
+            m.Body = textMessage;
+            
             SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
-            // логин и пароль
+            
             smtp.Credentials = new NetworkCredential("sush1marcet@gmail.com", "VhGfTgOy6D");
             smtp.EnableSsl = true;
             smtp.Send(m);

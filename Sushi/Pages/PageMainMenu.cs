@@ -28,7 +28,7 @@ namespace SushiMarcet.Models
                                       "Sets",
                                       "Drinks",
                                       "Sauces and side dishes",
-                                      "Go Back" };
+                                      "\nGo Back" };
         }
 
         protected override void TransferPage(string[] options, int selectedIndex)
@@ -73,7 +73,7 @@ namespace SushiMarcet.Models
                     PageMenuDrinks pageMenuDrinks = new();
                     _ = pageMenuDrinks.Run();
                     break;
-                case "Go Back":
+                case "\nGo Back":
                     Clear();
                     PageMainMenu pageMainMenu = new();
                     _ = pageMainMenu.Run();
@@ -85,6 +85,7 @@ namespace SushiMarcet.Models
                     break;
                 case "Go out":
                     Clear();
+                    WriteLine("<<Good Bye :)>>");
                     break;
             }
         }

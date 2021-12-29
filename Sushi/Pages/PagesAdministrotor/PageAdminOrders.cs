@@ -16,7 +16,7 @@ namespace SushiMarcet.Pages
         {
             _bannerPage = "Orders";
 
-            _options = new string[] {"List of orders not reviewed",
+            _options = new string[] {$"List of orders not reviewed",
                                      "List of completed orders",
                                      "List of rejected orders",
                                      "List of orders in progress",
@@ -44,9 +44,19 @@ namespace SushiMarcet.Pages
             }
         }
 
-        private void GetAllOrders()
+        private void GetOrdersCompleted()
         {
             
+
+        }
+
+        private void GetOrdersCompletedJson()
+        {
+            //if()
+        }
+
+        private void GetOrdersCompletedBd()
+        {
 
         }
 

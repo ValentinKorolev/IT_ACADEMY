@@ -25,9 +25,8 @@ namespace SushiMarcet.Models
             else
             {
                 _bannerPage = "Administrator Page";
-
                 
-                _options = new string[] {"1.Orders",
+                _options = new string[] {$"1.Orders",
                                          "2.Sushi",
                                          "3.Sauces and side dishes",
                                          "4.Drinks",
@@ -38,6 +37,8 @@ namespace SushiMarcet.Models
 
         protected override void TransferPage(string[] options, int selectedIndex)
         {
+            
+
             switch (options[selectedIndex])
             {
                 case "1.Orders":
