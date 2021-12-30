@@ -12,6 +12,9 @@ namespace SushiMarcet.Pages
         private const string NameAdmin = "Admin123";
         private const string PassAdmin = "122345";
 
+        SqlDrinksRepository sqlDrinks = new SqlDrinksRepository();
+        JsonDrinksRepository jsonDrinks = new JsonDrinksRepository();
+
         private int _infoId;
         private string _name;
         private decimal _price;
@@ -58,59 +61,32 @@ namespace SushiMarcet.Pages
         //View Drinks
         private void ViewListDrinks()
         {
+            List<Drinks> listDrinks = new List<Drinks>();
+
+            //listDrinks = (List<Drinks>)sqlDrinks.GetItemList();
+            listDrinks = (List<Drinks>)jsonDrinks.GetItemList();
+
+            sqlDrinks.Dispose();
+
             do
             {
                 Clear();
                 WriteLine("List Drinks (Press ESC to go back)");
                 WriteLine();
 
-                //ViewDrinksFromDb();
-                ViewDrinksFromJson();
-
+      
+                foreach(var drink in listDrinks)
+                {
+                    WriteLine(drink.ShowDataForAdmin());
+                    WriteLine();
+                }
+               
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;                    
                 
             } while (keyPressed != ConsoleKey.Escape);
 
             PageAdminDrinksRun();
-        }
-
-        private void ViewDrinksFromJson()
-        {
-                if (File.Exists(Observer.FileNameProduct))
-                {
-                    var fileName = File.ReadAllText(Observer.FileNameProduct);
-                    var jsonObject = JsonConvert.DeserializeObject<ListProducts>(fileName);
-
-                    foreach (var product in jsonObject.DrinksMenu)
-                    {
-                        WriteLine(product.ShowDataForAdmin());
-                        WriteLine();
-                    }
-                }
-                else
-                {
-                    WriteLine();
-                    WriteLine("Drinks not found");
-                    Thread.Sleep(2000);
-                    PageAdminDrinksRun();
-                }    
-        }
-
-        private void ViewDrinksFromDb()
-        {
-            List<Drinks> drinks = new List<Drinks>();
-
-            using (ApplicationContext db = new ApplicationContext())
-            {
-                drinks = db.Drinks.ToList();
-
-                foreach (var drink in drinks)
-                {
-                    WriteLine(drink.ShowDataForAdmin());
-                    WriteLine();
-                }
-            }
         }
 
         //Add Drinks
@@ -143,9 +119,12 @@ namespace SushiMarcet.Pages
 
                     Drinks drink = new(_infoId, _name, _price, _description);
 
-                    // AddDrinkToDb should be the first
-                    AddDrinkToDb(drink);
-                    AddDrinkToJson(drink);
+                    //Create in Db drinks
+                    sqlDrinks.Create(drink);
+                    sqlDrinks.Dispose();
+
+                    //Create in Json drinks
+                    jsonDrinks.Create(drink);
 
                     WriteLine($"Drink: {drink.ShowDataForAdmin()} - ADDED");
                 }
@@ -154,56 +133,6 @@ namespace SushiMarcet.Pages
 
         }
 
-        private void AddDrinkToJson(Drinks drinks)
-        {
-            ListProducts model = new ListProducts();
-
-            if (File.Exists(Observer.FileNameProduct))
-            {
-                var fileName = File.ReadAllText(Observer.FileNameProduct);
-                var drinkJson = JsonConvert.DeserializeObject<ListProducts>(fileName);
-
-                model.SushiMenu = drinkJson.SushiMenu;
-                model.DrinksMenu = drinkJson.DrinksMenu;
-                model.SauceAndDishesMenu = drinkJson.SauceAndDishesMenu;
-
-                model.DrinksMenu.Add(drinks);
-
-                File.Delete(Observer.FileNameProduct);
-
-                string _jsonObject = JsonConvert.SerializeObject(model);
-                File.AppendAllText(Observer.FileNameProduct, _jsonObject);
-            }
-            else
-            {
-                model.DrinksMenu.Add(drinks);
-
-                string _jsonObject = JsonConvert.SerializeObject(model);
-
-                File.AppendAllText(Observer.FileNameProduct, _jsonObject);
-            }
-        }
-
-        private void AddDrinkToDb(Drinks drinks)
-        {
-            using (ApplicationContext db = new ApplicationContext())
-            {
-                try
-                {
-                    db.Drinks.Add(drinks);
-                    db.SaveChanges();
-                    Logger<PageAdmin>.Debug($"Admin added drink: {drinks.ShowDataForAdmin}");
-                }
-                catch (Exception ex)
-                {
-                    Logger<PageAdmin>.Error("Read InnerException", ex.InnerException);
-                    WriteLine("Error, please look logs!");
-                    Thread.Sleep(10000);
-                }
-            }
-        }
-
-        //Update Drinks
         private void UpdateDrinks()
         {
             int drinkId;
@@ -214,7 +143,7 @@ namespace SushiMarcet.Pages
                 WriteLine("Update Drinks\n");
                 Write("Enter the Id of the drink you want to update: ");
 
-                bool isId = int.TryParse(ReadLine(), out drinkId);
+                _ = int.TryParse(ReadLine(), out drinkId);
 
                 WriteLine();
                 WriteLine("Do you want to continue?(Press ESC to go back)");
@@ -222,7 +151,9 @@ namespace SushiMarcet.Pages
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
 
-                if (isId == true && keyPressed != ConsoleKey.Escape)
+                bool isDrink = CheckProduct(drinkId);
+
+                if (isDrink && keyPressed != ConsoleKey.Escape)
                 {
                     WriteLine("Enter Name Drink: ");
                     _name = ReadLine();
@@ -233,14 +164,28 @@ namespace SushiMarcet.Pages
                     WriteLine("Enter Descripion Drink (200 symbol): ");
                     _description = ReadLine();
 
-                    UpdateDrinksDb(drinkId);
-                    UpdateDrinksJson(drinkId);
+                    Drinks updateDrinks = new(drinkId, _name, _price, _description);
+                    
+                    //Update Drink in Db
+                    sqlDrinks.Update(updateDrinks);
+                    sqlDrinks.Dispose();
+
+                    //Update Drink in Json
+                    jsonDrinks.Update(updateDrinks);
+
+                    Clear();
+                    WriteLine($"Drink with Id - {drinkId} UPDATE");
+                    Thread.Sleep(3000);
+
+                    PageAdminDrinksRun();
                 }
                 else if (keyPressed != ConsoleKey.Escape)
                 {
                     Clear();
-                    WriteLine("Incorrect input");
+                    WriteLine($"Incorrect input or drink with Id - ({drinkId}) NOT FOUND");
                     Thread.Sleep(2000);
+
+                    PageAdminDrinksRun();
                 }
 
             } while (keyPressed != ConsoleKey.Escape);
@@ -248,80 +193,6 @@ namespace SushiMarcet.Pages
             PageAdminDrinksRun();
         }
 
-        private void UpdateDrinksJson(int drinkId)
-        {
-            ListProducts model = new ListProducts();
-
-            if (File.Exists(Observer.FileNameProduct))
-            {
-                var fileName = File.ReadAllText(Observer.FileNameProduct);
-                var objectJson = JsonConvert.DeserializeObject<ListProducts>(fileName);
-
-                model.DrinksMenu = objectJson.DrinksMenu;
-
-                Drinks updateDrink = model.DrinksMenu.FirstOrDefault(_ => _.Id == drinkId);
-
-                if (updateDrink != null)
-                {
-
-                    Drinks newDrink = new(drinkId, _name, _price, _description);
-
-                    int index = model.DrinksMenu.IndexOf(model.DrinksMenu.FirstOrDefault(_ => _.Id == drinkId));
-                    model.DrinksMenu[index] = newDrink;
-
-                    model.SushiMenu = objectJson.SushiMenu;
-                    model.SauceAndDishesMenu = objectJson.SauceAndDishesMenu;
-
-                    File.Delete(Observer.FileNameProduct);
-
-                    string _jsonObject = JsonConvert.SerializeObject(model);
-                    File.AppendAllText(Observer.FileNameProduct, _jsonObject);
-
-                    Clear();
-                    WriteLine($"Drink with Id - {drinkId} UPDATE");
-                    Thread.Sleep(3000);
-                    PageAdminDrinksRun();
-                }
-                else
-                {
-                    Clear();
-                    WriteLine($"Drink with Id - ({drinkId}) NOT FOUND in file json");
-                    Thread.Sleep(3000);
-                    PageAdminDrinksRun();
-                }
-            }
-            else
-            {
-                Clear();
-                WriteLine("File Products.json NOT FOUND");
-                Thread.Sleep(3000);
-                PageAdminDrinksRun();
-            }
-        }
-
-        private void UpdateDrinksDb(int drinkId)
-        {
-            try
-            {
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    Drinks updateDrink = db.Drinks.FirstOrDefault(_ => _.Id == drinkId);
-                    updateDrink.Name = _name;
-                    updateDrink.Price = _price;
-                    updateDrink.Description = _description;
-
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                Clear();
-                WriteLine($"Drink with Id - ({drinkId}) NOT FOUND in DataBase");
-                Thread.Sleep(3000);
-            }
-        }
-
-        //Delete Drinks
         private void DeleteDrinks()
         {
             int drinkId;
@@ -332,7 +203,7 @@ namespace SushiMarcet.Pages
                 WriteLine("Delete Drinks\n");
                 Write("Enter the Id of the drink you want to delete: ");
 
-                bool isId = int.TryParse(ReadLine(), out drinkId);
+                _ = int.TryParse(ReadLine(), out drinkId);
 
                 WriteLine();
                 WriteLine("Do you want to continue?(Press ESC to go back)");
@@ -340,16 +211,30 @@ namespace SushiMarcet.Pages
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
 
-                if (isId == true && keyPressed != ConsoleKey.Escape)
+                bool isDrink = CheckProduct(drinkId);
+
+                if (isDrink && keyPressed != ConsoleKey.Escape)
                 {
-                    DeleteDrinkDb(drinkId);
-                    DeleteDrinkJson(drinkId);
+                    //Delete Drinks Db 
+                    sqlDrinks.Delete(drinkId);
+                    sqlDrinks.Dispose();
+
+                    //Delete Drinks Json
+                    jsonDrinks.Delete(drinkId);
+
+                    Clear();
+                    WriteLine($"Drink with Id - {drinkId} DELETE");
+                    Thread.Sleep(3000);
+
+                    PageAdminDrinksRun();
                 }
                 else if (keyPressed != ConsoleKey.Escape)
                 {
                     Clear();
-                    WriteLine("Incorrect input");
+                    WriteLine($"Incorrect input or drink with Id - ({drinkId}) NOT FOUND");
                     Thread.Sleep(2000);
+
+                    PageAdminDrinksRun();
                 }
 
             } while (keyPressed != ConsoleKey.Escape);
@@ -357,74 +242,10 @@ namespace SushiMarcet.Pages
             PageAdminDrinksRun();
         }
 
-        private void DeleteDrinkJson(int drinkId)
+        private bool CheckProduct(int id)
         {
-            ListProducts model = new ListProducts();
-
-            if (File.Exists(Observer.FileNameProduct))
-            {
-                var fileName = File.ReadAllText(Observer.FileNameProduct);
-                var objectJson = JsonConvert.DeserializeObject<ListProducts>(fileName);
-
-                model.DrinksMenu = objectJson.DrinksMenu;
-
-                Drinks deleteDrink = model.DrinksMenu.FirstOrDefault(_ => _.Id == drinkId);
-
-                if (deleteDrink != null)
-                {
-                    model.DrinksMenu.Remove(deleteDrink);
-                    model.SushiMenu = objectJson.SushiMenu;
-                    model.SauceAndDishesMenu = objectJson.SauceAndDishesMenu;
-
-                    File.Delete(Observer.FileNameProduct);
-
-                    string _jsonObject = JsonConvert.SerializeObject(model);
-                    File.AppendAllText(Observer.FileNameProduct, _jsonObject);
-
-                    Clear();
-                    WriteLine($"Drink with Id - {drinkId} DELETE");
-                    Thread.Sleep(3000);
-                    PageAdminDrinksRun();
-                }
-                else
-                {
-                    Clear();
-                    WriteLine($"Drink with Id - ({drinkId}) NOT FOUND in file json");
-                    Thread.Sleep(3000);
-                    PageAdminDrinksRun();
-                }
-            }
-            else
-            {
-                Clear();
-                WriteLine("File Products.json NOT FOUND");
-                Thread.Sleep(3000);
-                PageAdminDrinksRun();
-            }
+            return jsonDrinks.GetItem(id) is not null && sqlDrinks.GetItem(id) is not null;
         }
-
-        private void DeleteDrinkDb(int drinkId)
-        {
-            try
-            {
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    Drinks deleteDrink = db.Drinks.FirstOrDefault(_ => _.Id == drinkId);
-
-                    db.Drinks.Remove(deleteDrink);
-                    db.SaveChanges();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Clear();
-                WriteLine($"Drink with Id - ({drinkId}) NOT FOUND in DataBase");
-                Thread.Sleep(3000);
-            }            
-        }
-
-        //Other methods
 
         private void BackToPageAdmin()
         {

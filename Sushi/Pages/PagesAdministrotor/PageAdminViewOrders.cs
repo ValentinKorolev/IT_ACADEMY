@@ -42,7 +42,7 @@ namespace SushiMarcet.Pages.PagesAdministrotor
         private void AcceptTheOrder(Order order)
         {
             SendMessage(order);
-            order.Status = StatusOrder.Accepted;
+            order.Status = StatusOrder.InProgress;
             UpdateDateOrder(order);
 
             Clear();

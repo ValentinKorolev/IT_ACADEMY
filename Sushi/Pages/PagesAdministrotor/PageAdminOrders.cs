@@ -1,4 +1,5 @@
-﻿using SushiMarcet.Pages.PagesAdministrotor;
+﻿using Newtonsoft.Json;
+using SushiMarcet.Pages.PagesAdministrotor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,10 @@ namespace SushiMarcet.Pages
         {
             _bannerPage = "Orders";
 
-            _options = new string[] {$"List of orders not reviewed",
-                                     "List of completed orders",
-                                     "List of rejected orders",
-                                     "List of orders in progress",
+            _options = new string[] {$"0.Orders not reviewed",
+                                     "1.Completed orders",
+                                     "2.Rejected orders",
+                                     "3.Orders in progress",
                                      "Go back",
                                     };
         }
@@ -31,33 +32,258 @@ namespace SushiMarcet.Pages
                 case "Go back":
                     BackToPageAdmin();
                     break;
-                case "List of orders not reviewed":
+                case "0.Orders not reviewed":
                     PageAdminOrdersNotReviewed pageAdminOrdersNotConsidered = new();
                     _ = pageAdminOrdersNotConsidered.Run();
                     break;
-                case "List of completed orders":
+                case "1.Completed orders":
+                    GetOrdersCompleted();
+                    PageAdminOrdersRun();
                     break;
-                case "List of rejected orders":
+                case "2.Rejected orders":
+                    GetRejectedOrders();
+                    PageAdminOrdersRun();
                     break;
-                case "List of orders in progress":
+                case "3.Orders in progress":
+                    GetOrdersInProgress();
+                    PageAdminOrdersRun();
                     break;
             }
         }
 
-        private void GetOrdersCompleted()
+        private void GetOrdersInProgress()
+        { 
+            do
+            {
+                Clear();
+                WriteLine("List orders in progress (Press ESC to go back)");
+                WriteLine();
+
+                //GetOrdersInProgressDb();
+                GetOrdersInProgressJson();
+
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;
+
+            } while (keyPressed != ConsoleKey.Escape) ;
+        }
+
+        private void GetOrdersInProgressJson()
         {
-            
+            var fileName = File.ReadAllText(Observer.FileNameOrders);
+            var objectJson = JsonConvert.DeserializeObject<ListOrders>(fileName);
+
+            var orders = objectJson.Orders.FindAll(_ => _.Status == StatusOrder.InProgress);
+
+            if (orders.Count == 0)
+            {
+                Clear();
+                WriteLine("No rejected orders found");
+                Thread.Sleep(3000);
+
+                PageAdminOrdersRun();
+            }
+            foreach (var order in orders)
+            {
+                WriteLine(order.ToString());
+                WriteLine();
+            }
+        }
+
+        private void GetOrdersInProgressDb()
+        {
+            try
+            {
+
+                List<Order> orders = new List<Order>();
+
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    orders = db.Order.Where(_ => _.Status == StatusOrder.InProgress).ToList();
+
+                    if (orders.Count == 0)
+                    {
+                        Clear();
+                        WriteLine("No completed orders found");
+                        Thread.Sleep(3000);
+
+                        PageAdminOrdersRun();
+                    }
+                    else
+                    {
+                        foreach (var order in orders)
+                        {
+                            WriteLine(order.ToString());
+                            WriteLine();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private void GetRejectedOrders()
+        {
+            do
+            {
+                Clear();
+                WriteLine("List of rejected orders (Press ESC to go back)");
+                WriteLine();
+
+                //GetRejectedOrdersJson();
+                GetRejectedOrdersDb();
+
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;
+
+            } while (keyPressed != ConsoleKey.Escape);
+        }
+
+        private void GetRejectedOrdersJson()
+        {
+            var fileName = File.ReadAllText(Observer.FileNameOrders);
+            var objectJson = JsonConvert.DeserializeObject<ListOrders>(fileName);
+
+            var orders = objectJson.Orders.FindAll(_ => _.Status == StatusOrder.Rejected);
+
+            if (orders.Count == 0)
+            {
+                Clear();
+                WriteLine("No rejected orders found");
+                Thread.Sleep(3000);
+
+                PageAdminOrdersRun();
+            }
+            foreach (var order in orders)
+            {
+                WriteLine(order.ToString());
+                WriteLine();
+            }
+        }
+
+        private void GetRejectedOrdersDb()
+        {
+            try
+            {
+
+                List<Order> orders = new List<Order>();
+
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    orders = db.Order.Where(_ => _.Status == StatusOrder.Rejected).ToList();
+
+                    if (orders.Count == 0)
+                    {
+                        Clear();
+                        WriteLine("No completed orders found");
+                        Thread.Sleep(3000);
+
+                        PageAdminOrdersRun();
+                    }
+                    else
+                    {
+                        foreach (var order in orders)
+                        {
+                            WriteLine(order.ToString());
+                            WriteLine();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private void GetOrdersCompleted()
+        {                   
+            do
+            {
+                Clear();
+                WriteLine("List of completed orders (Press ESC to go back)");
+                WriteLine();
+
+                //GetOrdersCompletedDb();
+                GetOrdersCompletedJson();
+
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;
+
+            } while (keyPressed != ConsoleKey.Escape);
 
         }
 
         private void GetOrdersCompletedJson()
         {
-            //if()
+
+            if (File.Exists(Observer.FileNameOrders))
+            {
+
+                var fileName = File.ReadAllText(Observer.FileNameOrders);
+                var objectJson = JsonConvert.DeserializeObject<ListOrders>(fileName);
+
+                var orders = objectJson.Orders.FindAll(_ => _.Status == StatusOrder.Completed);
+                
+                if(orders.Count == 0)
+                {
+                    Clear();
+                    WriteLine("No completed orders found");
+                    Thread.Sleep(3000);
+
+                    PageAdminOrdersRun();
+                }
+                foreach (var order in orders)
+                {
+                    WriteLine(order.ToString());
+                    WriteLine();
+                }                
+            }
+            else
+            {
+                Clear();
+                WriteLine("File Orders.json not found");
+                Thread.Sleep(3000);
+
+            }
         }
 
-        private void GetOrdersCompletedBd()
+        private void GetOrdersCompletedDb()
         {
+            try
+            {
 
+                List<Order> orders = new List<Order>();
+
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    orders = db.Order.Where(_ => _.Status == StatusOrder.Completed).ToList();
+                    
+                    if(orders.Count == 0)
+                    {
+                        Clear();
+                        WriteLine("No completed orders found");
+                        Thread.Sleep(3000);
+
+                        PageAdminOrdersRun();
+                    }
+                    else
+                    {
+                        foreach (var order in orders)
+                        {
+                            WriteLine(order.ToString());
+                            WriteLine();
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                
+            }
         }
 
         private void BackToPageAdmin()

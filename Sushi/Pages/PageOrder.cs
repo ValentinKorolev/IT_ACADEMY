@@ -78,7 +78,7 @@ namespace SushiMarcet.Pages
         {
             if(isCorrectOrder == true)
             {
-                Order order = new(/*_name,_email, _phoneNumber, _adressDelivery*/);
+                Order order = new();
 
                 order.NameClient = _name;
                 order.EmailClient = _email;

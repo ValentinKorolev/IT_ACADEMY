@@ -12,6 +12,9 @@ namespace SushiMarcet.Pages
         private const string NameAdmin = "Admin123";
         private const string PassAdmin = "122345";
 
+        SqlDishesRepository sqlDishes = new SqlDishesRepository();
+        JsonDishesRepository jsonDishes = new JsonDishesRepository();
+
         private int _infoId;
         private string _name;
         private decimal _price;
@@ -52,9 +55,6 @@ namespace SushiMarcet.Pages
             }
         }
 
-        //CRUD Sauce and side dishes
-
-        //Delete Dishes
         private void DeleteDishes()
         {
             int _dishesId;
@@ -65,7 +65,7 @@ namespace SushiMarcet.Pages
                 WriteLine("Delete Dishes\n");
                 Write("Enter the Id of the dishes you want to delete: ");
 
-                bool isId = int.TryParse(ReadLine(), out _dishesId);
+                _ = int.TryParse(ReadLine(), out _dishesId);
 
                 WriteLine();
                 WriteLine("Do you want to continue?(Press ESC to go back)");
@@ -73,16 +73,30 @@ namespace SushiMarcet.Pages
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
 
-                if (isId == true && keyPressed != ConsoleKey.Escape)
+                bool isDish = CheckProduct(_dishesId);
+
+                if (isDish && keyPressed != ConsoleKey.Escape)
                 {
-                    DeleteDishesDb(_dishesId);
-                    DeleteDishesJson(_dishesId);
+                    //Delete Dishes Db 
+                    sqlDishes.Delete(_dishesId);
+                    sqlDishes.Dispose();
+
+                    //Delete Dishes Json
+                    jsonDishes.Delete(_dishesId);
+
+                    Clear();
+                    WriteLine($"Dish with Id - {_dishesId} DELETE");
+                    Thread.Sleep(3000);
+
+                    PageAdminDishesRun();
                 }
                 else if (keyPressed != ConsoleKey.Escape)
                 {
                     Clear();
-                    WriteLine("Incorrect input");
-                    Thread.Sleep(2000);
+                    WriteLine($"Incorrect input or dish with Id - ({_dishesId}) NOT FOUND");
+                    Thread.Sleep(4000);
+
+                    PageAdminDishesRun();
                 }
 
             } while (keyPressed != ConsoleKey.Escape);
@@ -90,73 +104,6 @@ namespace SushiMarcet.Pages
             PageAdminDishesRun();
         }
 
-        private void DeleteDishesJson(int dishesId)
-        {
-            ListProducts model = new ListProducts();
-
-            if (File.Exists(Observer.FileNameProduct))
-            {
-                var fileName = File.ReadAllText(Observer.FileNameProduct);
-                var objectJson = JsonConvert.DeserializeObject<ListProducts>(fileName);
-
-                model.SauceAndDishesMenu = objectJson.SauceAndDishesMenu;
-
-                SauceAndDishes deleteDishes = model.SauceAndDishesMenu.FirstOrDefault(_ => _.Id == dishesId);
-
-                if (deleteDishes != null)
-                {
-                    model.SauceAndDishesMenu.Remove(deleteDishes);
-                    model.DrinksMenu = objectJson.DrinksMenu;
-                    model.SushiMenu = objectJson.SushiMenu;
-
-                    File.Delete(Observer.FileNameProduct);
-
-                    string _jsonObject = JsonConvert.SerializeObject(model);
-                    File.AppendAllText(Observer.FileNameProduct, _jsonObject);
-
-                    Clear();
-                    WriteLine($"Dishes with Id - {dishesId} DELETE");
-                    Thread.Sleep(3000);
-                    PageAdminDishesRun();
-                }
-                else
-                {
-                    Clear();
-                    WriteLine($"Dish with Id - ({dishesId}) NOT FOUND in file json");
-                    Thread.Sleep(3000);
-                    PageAdminDishesRun();
-                }
-            }
-            else
-            {
-                Clear();
-                WriteLine("File Products.json NOT FOUND");
-                Thread.Sleep(3000);
-                PageAdminDishesRun();
-            }
-        }
-
-        private void DeleteDishesDb(int dishesId)
-        {
-            try
-            {
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    SauceAndDishes deleteDish = db.SauceAndDishes.FirstOrDefault(_ => _.Id == dishesId);
-
-                    db.SauceAndDishes.Remove(deleteDish);
-                    db.SaveChanges();
-                }
-
-            }catch (Exception ex)
-            {
-                Clear();
-                WriteLine($"Dish with Id - ({dishesId}) NOT FOUND in DataBase");
-                Thread.Sleep(3000);
-            }            
-        }
-
-        //Update Dishes
         private void UpdateDishes()
         {
             int _dishesId;
@@ -167,7 +114,7 @@ namespace SushiMarcet.Pages
                 WriteLine("Update SASD\n");
                 Write("Enter the Id of the sushi you want to update: ");
 
-                bool isId = int.TryParse(ReadLine(), out _dishesId);
+                _ = int.TryParse(ReadLine(), out _dishesId);
 
                 WriteLine();
                 WriteLine("Do you want to continue?(Press ESC to go back)");
@@ -175,7 +122,9 @@ namespace SushiMarcet.Pages
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
 
-                if (isId == true && keyPressed != ConsoleKey.Escape)
+                bool isDish = CheckProduct(_dishesId);
+
+                if (isDish && keyPressed != ConsoleKey.Escape)
                 {
                     Clear();
 
@@ -188,14 +137,28 @@ namespace SushiMarcet.Pages
                     WriteLine("Enter Descripion Dishes (500 symbol): ");
                     _description = ReadLine();
 
-                    UpdateDishesDb(_dishesId);
-                    UpdateDishesJson(_dishesId);
+                    SauceAndDishes updateDish = new(_dishesId, _name, _price, _description);
+
+                    //Update Dishes Db
+                    sqlDishes.Update(updateDish);
+                    sqlDishes.Dispose();
+
+                    //Update Dishe Json
+                    jsonDishes.Update(updateDish);
+
+                    Clear();
+                    WriteLine($"Dish with Id - {_dishesId} UPDATE");
+                    Thread.Sleep(3000);
+
+                    PageAdminDishesRun();
                 }
                 else if (keyPressed != ConsoleKey.Escape)
                 {
                     Clear();
-                    WriteLine("Incorrect input");
-                    Thread.Sleep(2000);
+                    WriteLine($"Incorrect input or dish with Id - ({_dishesId}) NOT FOUND");
+                    Thread.Sleep(4000);
+
+                    PageAdminDishesRun();
                 }
 
             } while (keyPressed != ConsoleKey.Escape);
@@ -203,80 +166,6 @@ namespace SushiMarcet.Pages
             PageAdminDishesRun();
         }
 
-        private void UpdateDishesJson(int dishesId)
-        {
-            ListProducts model = new ListProducts();
-
-            if (File.Exists(Observer.FileNameProduct))
-            {
-                var fileName = File.ReadAllText(Observer.FileNameProduct);
-                var dishesJson = JsonConvert.DeserializeObject<ListProducts>(fileName);
-
-                model.SauceAndDishesMenu = dishesJson.SauceAndDishesMenu;
-
-                SauceAndDishes updateDishes = model.SauceAndDishesMenu.FirstOrDefault(_ => _.Id == dishesId);
-
-                if (updateDishes != null)
-                {
-
-                    SauceAndDishes newDishes = new(dishesId, _name, _price, _description);
-
-                    int index = model.SauceAndDishesMenu.IndexOf(model.SauceAndDishesMenu.FirstOrDefault(_ => _.Id == dishesId));
-                    model.SauceAndDishesMenu[index] = newDishes;
-                    model.DrinksMenu = dishesJson.DrinksMenu;
-                    model.SushiMenu = dishesJson.SushiMenu;
-
-                    File.Delete(Observer.FileNameProduct);
-
-                    string _jsonObject = JsonConvert.SerializeObject(model);
-                    File.AppendAllText(Observer.FileNameProduct, _jsonObject);
-
-                    Clear();
-                    WriteLine($"Dishes with Id - {dishesId} UPDATE");
-                    Thread.Sleep(3000);
-                    PageAdminDishesRun();
-                }
-                else
-                {
-                    Clear();
-                    WriteLine($"Dish with Id - ({dishesId}) NOT FOUND in file json");
-                    Thread.Sleep(3000);
-                    PageAdminDishesRun();
-                }
-            }
-            else
-            {
-                Clear();
-                WriteLine("File Products.json NOT FOUND");
-                Thread.Sleep(3000);
-                PageAdminDishesRun();
-            }
-        }
-
-        private void UpdateDishesDb(int dishesId)
-        {
-            try
-            {
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    SauceAndDishes updateDishes = db.SauceAndDishes.FirstOrDefault(_ => _.Id == dishesId);
-                    updateDishes.Name = _name;
-                    updateDishes.Price = _price;
-                    updateDishes.Description = _description;
-
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                Clear();
-                WriteLine($"Dish with Id - ({dishesId}) NOT FOUND in DataBase");
-                Thread.Sleep(3000);
-            }
-
-        }
-
-        //Add Dishes
         private void AddDishes()
         {
             do
@@ -306,9 +195,12 @@ namespace SushiMarcet.Pages
 
                     SauceAndDishes dishes = new(_infoId, _name, _price, _description);
 
-                    // AddDishesDb should be the first
-                    AddDishesDb(dishes);
-                    AddDishesJson(dishes);
+                    //Create Dish Db
+                    sqlDishes.Create(dishes);
+                    sqlDishes.Dispose();
+
+                    //Create Dish Json
+                    jsonDishes.Create(dishes);
 
                     WriteLine($"Dishes: {dishes.ShowDataForAdmin()} - ADDED");
                 }
@@ -317,65 +209,26 @@ namespace SushiMarcet.Pages
 
         }
 
-        private void AddDishesJson(SauceAndDishes dishes)
-        {
-            ListProducts model = new ListProducts();
-
-            if (File.Exists(Observer.FileNameProduct))
-            {
-                var fileName = File.ReadAllText(Observer.FileNameProduct);
-                var dishesJson = JsonConvert.DeserializeObject<ListProducts>(fileName);
-
-                model.SushiMenu = dishesJson.SushiMenu;
-                model.DrinksMenu = dishesJson.DrinksMenu;
-                model.SauceAndDishesMenu = dishesJson.SauceAndDishesMenu;
-                model.SauceAndDishesMenu.Add(dishes);
-
-                File.Delete(Observer.FileNameProduct);
-
-                string _jsonObject = JsonConvert.SerializeObject(model);
-                File.AppendAllText(Observer.FileNameProduct, _jsonObject);
-            }
-            else
-            {
-                model.SauceAndDishesMenu.Add(dishes);
-
-                string _jsonObject = JsonConvert.SerializeObject(model);
-
-                File.AppendAllText(Observer.FileNameProduct, _jsonObject);
-            }
-        }
-
-        private void AddDishesDb(SauceAndDishes dishes)
-        {
-            using (ApplicationContext db = new ApplicationContext())
-            {
-                try
-                {
-                    db.SauceAndDishes.Add(dishes);
-                    db.SaveChanges();
-                    Logger<PageAdmin>.Debug($"Admin added dishes: {dishes.ShowDataForAdmin()}");
-                }
-                catch (Exception ex)
-                {
-                    Logger<PageAdmin>.Error("Read InnerException", ex.InnerException);
-                    WriteLine("Error, please look logs!");
-                    Thread.Sleep(10000);
-                }
-            }
-        }
 
         //View Dishes
         private void ViewListDishes()
         {
+            List<SauceAndDishes> listDishes = new List<SauceAndDishes>();
+
+            listDishes = (List<SauceAndDishes>)sqlDishes.GetItemList();
+            //listDishes = (List<SauceAndDishes>)jsonDishes.GetItemList();
+
             do
             {
                 Clear();
                 WriteLine("List Sauces and side dishes (Press ESC to go back)");
                 WriteLine();
 
-                ViewListDishesFromDb();
-                //ViewListDishesFromJson();
+                foreach (var dish in listDishes)
+                {
+                    WriteLine(dish.ShowDataForAdmin());
+                    WriteLine();
+                }
                 
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;                
@@ -385,45 +238,9 @@ namespace SushiMarcet.Pages
             PageAdminDishesRun();
         }
 
-        private void ViewListDishesFromJson()
+        private bool CheckProduct(int id)
         {
-
-
-            if (File.Exists(Observer.FileNameProduct))
-            {
-                var fileName = File.ReadAllText(Observer.FileNameProduct);
-                var jsonObject = JsonConvert.DeserializeObject<ListProducts>(fileName);
-
-                foreach (var product in jsonObject.SauceAndDishesMenu)
-                {
-                    WriteLine(product.ShowDataForAdmin());
-                    WriteLine();
-                }
-            }
-            else
-            {
-                Clear();
-                WriteLine("Dishes not found");
-                Thread.Sleep(4000);
-
-                PageAdminDishesRun();
-            }
-        }
-
-        private void ViewListDishesFromDb()
-        {
-            List<SauceAndDishes> dishes = new List<SauceAndDishes>();
-
-            using (ApplicationContext db = new ApplicationContext())
-            {
-                dishes = db.SauceAndDishes.ToList();
-
-                foreach (var dish in dishes)
-                {
-                    WriteLine(dish.ShowDataForAdmin());
-                    WriteLine();
-                }
-            }
+            return jsonDishes.GetItem(id) is not null && sqlDishes.GetItem(id) is not null;
         }
 
         private void BackToPageAdmin()

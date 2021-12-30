@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Pages
 {
-    internal sealed class PageMenuSushi : PageFather,IGetSushi<Sushi>
+    internal sealed class PageMenuSushi : PageFather/*,IGetSushFromDb<Sushi>*/
     {
         private readonly IEnumerable<Sushi> _sushis;
         private readonly string _goBack = "\nGo back";
+
+        SqlSushiRepository sqlSushi = new SqlSushiRepository();
 
         public PageMenuSushi(string sushiType)
         {
@@ -19,90 +21,20 @@ namespace SushiMarcet.Pages
             switch (sushiType)
             {
                 case Observer.Uramaki:
-                    _sushis = GetAllUramaki();
+                    _sushis = sqlSushi.GetSushi(Observer.Uramaki);
                     break;
                 case Observer.Futomaki:
-                    _sushis = GetAllFutomaki();
+                    _sushis = sqlSushi.GetSushi(Observer.Futomaki);
                     break;
                 case Observer.Nigiri:
-                    _sushis = GetAllNigiri();
+                    _sushis = sqlSushi.GetSushi(Observer.Nigiri);
                     break;
                 case Observer.BakedSushi:
-                    _sushis = GetAllBakedSushi();
+                    _sushis = sqlSushi.GetSushi(Observer.BakedSushi);
                     break;
             }
 
             _options = SetOptions(_sushis);
-        }
-
-        public IEnumerable<Sushi> GetAllUramaki()
-        {
-            try
-            {
-                var sushi = GetSushiJson(Observer.Uramaki);
-                return sushi;
-                
-            }
-            catch (Exception ex)
-            {
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    return db.Sushi.Where(_ => _.Type.Contains(Observer.Uramaki)).ToList();
-                }                
-            }            
-        }
-
-        public IEnumerable<Sushi> GetAllFutomaki()
-        {
-
-            try
-            {
-                var sushi = GetSushiJson(Observer.Futomaki);
-                return sushi;
-
-            }
-            catch (Exception ex)
-            {
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    return db.Sushi.Where(_ => _.Type.Contains(Observer.Futomaki)).ToList();
-                }
-                
-            }
-        }
-
-        public IEnumerable<Sushi> GetAllNigiri()
-        {
-            try
-            {
-                var sushi = GetSushiJson(Observer.Nigiri);
-                return sushi;
-
-            }
-            catch (Exception ex)
-            {
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    return db.Sushi.Where(_ => _.Type.Contains(Observer.Nigiri)).ToList();
-                }                
-            }
-        }
-
-        public IEnumerable<Sushi> GetAllBakedSushi()
-        {
-            try
-            {
-                var sushi = GetSushiJson(Observer.BakedSushi);
-                return sushi;
-
-            }
-            catch (Exception ex)
-            {
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    return db.Sushi.Where(_ => _.Type.Contains(Observer.BakedSushi)).ToList();
-                }                 
-            }
         }
 
         private string[] SetOptions(IEnumerable<Sushi> sushis)
@@ -123,23 +55,14 @@ namespace SushiMarcet.Pages
             switch (options[selectedIndex])
             {
                 case "\nGo back":
-                    PageMainMenu pageMainMenu = new();
-                    _ = pageMainMenu.Run();
+                    PageMainMenu page = new PageMainMenu("View the menu");
+                    _ = page.Run();
                     break;
                 default:
                     PageViewingProduct pageViewingProduct = new(_sushis.ElementAt(selectedIndex));
                     _ = pageViewingProduct.Run();
                     break;
             }
-        }
-
-        private IEnumerable<Sushi> GetSushiJson(string typeSushi)
-        {
-            var fileName = File.ReadAllText(Observer.FileNameProduct);
-            var sushis = JsonConvert.DeserializeObject<ListProducts>(fileName);
-            var currentSushiType = sushis.SushiMenu.FindAll(_ => _.Type == typeSushi);
-                         
-            return currentSushiType;
         }
     }
 }

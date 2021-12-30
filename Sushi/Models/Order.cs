@@ -9,9 +9,9 @@ namespace SushiMarcet.Models
     enum StatusOrder
     {
         NotReviewed = 1,
-        Accepted = 2,
+        InProgress = 2,
         Rejected = 3,
-        InProgress = 4,
+        Completed = 4,
     }
 
     internal class Order
@@ -34,7 +34,9 @@ namespace SushiMarcet.Models
 
         public override string ToString()
         {
-            return $"--Id: { Id}| Order time: {OrderTime}|";
+            return Status == StatusOrder.NotReviewed
+               ? $"--Id: { Id}| Order time: {OrderTime}|"
+               : $"--Id: { Id}| Order time: {OrderTime}| Status: {Status}";
         }
         public string ShowData()
         {
