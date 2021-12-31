@@ -209,8 +209,6 @@ namespace SushiMarcet.Pages
 
         }
 
-
-        //View Dishes
         private void ViewListDishes()
         {
             List<SauceAndDishes> listDishes = new List<SauceAndDishes>();

@@ -12,47 +12,14 @@ namespace SushiMarcet.Pages
         private readonly IEnumerable<Drinks> _drinks;
         private readonly string _goBack = "\nGo back";
 
+        SqlDrinksRepository sqlDrinks = new SqlDrinksRepository();
+
         public PageMenuDrinks()
         {
             _bannerPage = "Menu Drinks";
 
-            _drinks = GetDrinks();
+            _drinks = sqlDrinks.GetItemList();
             _options = SetDrinks(_drinks);
-        }
-
-        private string[] SetDrinks(IEnumerable<Drinks> drinks)
-        {
-            string[] options = new string[drinks.Count() + 1];
-
-            for (int i = 0; i < drinks.Count(); i++)
-            {
-                options[i] = drinks.ElementAt(i).ToString();
-            }
-            options[^1] = _goBack;
-
-            return options;
-        }
-
-        private IEnumerable<Drinks> GetDrinks()
-        {
-            try
-            {
-                using ApplicationContext db = new ApplicationContext();
-                return db.Drinks.ToList();
-            }
-            catch (Exception ex)
-            {
-                return GetDrinksJson();
-            }
-        }
-
-        private IEnumerable<Drinks> GetDrinksJson()
-        {
-            var fileName = File.ReadAllText(Observer.FileNameProduct);
-
-            var jsonObject = JsonConvert.DeserializeObject<ListProducts>(fileName);
-
-            return jsonObject.DrinksMenu;
         }
 
         protected override void TransferPage(string[] options, int selectedIndex)
@@ -68,6 +35,19 @@ namespace SushiMarcet.Pages
                     _ = pageViewingProduct.Run();
                     break;
             }
+        }
+
+        private string[] SetDrinks(IEnumerable<Drinks> drinks)
+        {
+            string[] options = new string[drinks.Count() + 1];
+
+            for (int i = 0; i < drinks.Count(); i++)
+            {
+                options[i] = drinks.ElementAt(i).ToString();
+            }
+            options[^1] = _goBack;
+
+            return options;
         }
     }
 }

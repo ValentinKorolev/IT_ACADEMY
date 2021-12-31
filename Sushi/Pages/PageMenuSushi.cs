@@ -21,33 +21,20 @@ namespace SushiMarcet.Pages
             switch (sushiType)
             {
                 case Observer.Uramaki:
-                    _sushis = sqlSushi.GetSushi(Observer.Uramaki);
+                    _sushis = sqlSushi.GetListItem(Observer.Uramaki);
                     break;
                 case Observer.Futomaki:
-                    _sushis = sqlSushi.GetSushi(Observer.Futomaki);
+                    _sushis = sqlSushi.GetListItem(Observer.Futomaki);
                     break;
                 case Observer.Nigiri:
-                    _sushis = sqlSushi.GetSushi(Observer.Nigiri);
+                    _sushis = sqlSushi.GetListItem(Observer.Nigiri);
                     break;
                 case Observer.BakedSushi:
-                    _sushis = sqlSushi.GetSushi(Observer.BakedSushi);
+                    _sushis = sqlSushi.GetListItem(Observer.BakedSushi);
                     break;
             }
 
             _options = SetOptions(_sushis);
-        }
-
-        private string[] SetOptions(IEnumerable<Sushi> sushis)
-        {
-            string[] options = new string[sushis.Count() + 1];
-
-            for (int i = 0; i < options.Length - 1; i++)
-            {
-                options[i] = sushis.ElementAt(i).ShowData();
-            }
-            options[^1] = _goBack;
-
-            return options;
         }
 
         protected override void TransferPage(string[] options, int selectedIndex)
@@ -63,6 +50,19 @@ namespace SushiMarcet.Pages
                     _ = pageViewingProduct.Run();
                     break;
             }
+        }
+
+        private string[] SetOptions(IEnumerable<Sushi> sushis)
+        {
+            string[] options = new string[sushis.Count() + 1];
+
+            for (int i = 0; i < options.Length - 1; i++)
+            {
+                options[i] = sushis.ElementAt(i).ToString();
+            }
+            options[^1] = _goBack;
+
+            return options;
         }
     }
 }

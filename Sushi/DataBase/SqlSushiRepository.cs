@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Models
 {
-    internal class SqlSushiRepository : IRepository<Sushi>, IRepositorySushi<Sushi>, IDisposable
+    internal class SqlSushiRepository : IRepository<Sushi>, IDisposable
     {
         private ApplicationContext db;
 
@@ -58,6 +58,11 @@ namespace SushiMarcet.Models
             return db.Sushi.ToList();
         }
 
+        public IEnumerable<Sushi> GetListItem(string typeSushi)
+        {
+            return db.Sushi.Where(_ => _.Type == typeSushi).ToList();
+        }
+
         public void Update(Sushi item)
         {
             try
@@ -71,11 +76,6 @@ namespace SushiMarcet.Models
                 WriteLine($"Sushi with Id - ({item.Id}) NOT FOUND in DataBase");
                 Thread.Sleep(3000);
             }
-        }
-
-        public IEnumerable<Sushi> GetSushi(string typeSushi)
-        {
-            return db.Sushi.Where(_ => _.Type == typeSushi).ToList();
         }
 
         private bool disposed = false;

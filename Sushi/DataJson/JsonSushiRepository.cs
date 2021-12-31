@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Models
 {
-    internal class JsonSushiRepository : IRepository<Sushi>, IRepositorySushi<Sushi>
+    internal class JsonSushiRepository : IRepository<Sushi>
     {
         public void Create(Sushi item)
         {
@@ -111,7 +111,7 @@ namespace SushiMarcet.Models
             }
         }
 
-        public IEnumerable<Sushi> GetSushi(string typeSushi)
+        public IEnumerable<Sushi> GetItemList(string typeSushi)
         {
             var fileName = File.ReadAllText(Observer.FileNameProduct);
             var sushis = JsonConvert.DeserializeObject<ListProducts>(fileName);

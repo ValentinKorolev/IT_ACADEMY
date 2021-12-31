@@ -13,36 +13,13 @@ namespace SushiMarcet.Models
         protected string _bannerPage;
         protected ConsoleKey keyPressed;
 
-        private void DisplayOptions()
-        {
-            WriteLine();
-
-            for (int i = 0; i < _options.Length; i++)
-            {
-                if (i == _selectedIndex)
-                {
-                    ForegroundColor = ConsoleColor.Black;
-                    BackgroundColor = ConsoleColor.White;
-                }
-                else
-                {
-                    ForegroundColor = ConsoleColor.White;
-                    BackgroundColor = ConsoleColor.Black;
-                }
-                WriteLine($"{_options[i]}");
-            }
-            ResetColor();
-        }
+        protected string color = Observer.color;
 
         public int Run()
         {
             do
             {
-                Clear();
-
-                WriteLine(_bannerPage);
-
-                DisplayOptions();
+                DisplayOptions(color);
 
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
@@ -76,6 +53,139 @@ namespace SushiMarcet.Models
         protected virtual void TransferPage(string[] options, int selectedIndex)
         {
             
+        }
+
+        private void DisplayOptions(string color)
+        {
+            if (color == "From dusk to dawn")
+            {
+                Clear();
+                ForegroundColor = ConsoleColor.Red;
+                BackgroundColor = ConsoleColor.Black;
+
+                WriteLine(_bannerPage);
+
+                ResetColor();
+
+                DisplayOptionsBChB();
+            }
+            else if (color == "California")
+            {
+                Clear();
+                ForegroundColor = ConsoleColor.Yellow;
+                BackgroundColor = ConsoleColor.Black;
+
+                WriteLine(_bannerPage);
+
+                ResetColor();
+
+                DisplayOptionsBlackYellow();
+            }
+            else if(color == "Matrix")
+            {
+                Clear();
+                ForegroundColor = ConsoleColor.Green;
+                BackgroundColor = ConsoleColor.Black;
+
+                WriteLine(_bannerPage);
+                
+                ResetColor();
+
+                DisplayOptionsBlackGreen();
+            }
+            else
+            {
+                Clear();
+
+                WriteLine(_bannerPage);
+
+                DisplayOptionsClassic();
+            }
+        }
+
+        private void DisplayOptionsBChB()
+        {
+
+            WriteLine();
+
+            for (int i = 0; i < _options.Length; i++)
+            {
+                if (i == _selectedIndex)
+                {
+                    ForegroundColor = ConsoleColor.White;
+                    BackgroundColor = ConsoleColor.Red;
+                }
+                else
+                {
+                    ForegroundColor = ConsoleColor.Red;
+                    BackgroundColor = ConsoleColor.Black;
+                }
+                WriteLine($"{_options[i]}");
+            }
+            ResetColor();
+        }
+
+        private void DisplayOptionsBlackGreen()
+        {
+            WriteLine();
+
+            for (int i = 0; i < _options.Length; i++)
+            {
+                if (i == _selectedIndex)
+                {
+                    ForegroundColor = ConsoleColor.Black;
+                    BackgroundColor = ConsoleColor.Green;
+                }
+                else
+                {
+                    ForegroundColor = ConsoleColor.Green;
+                    BackgroundColor = ConsoleColor.Black;
+                }
+                WriteLine($"{_options[i]}");
+            }
+            ResetColor();
+        }
+
+        private void DisplayOptionsBlackYellow()
+        {
+            WriteLine();
+
+            for (int i = 0; i < _options.Length; i++)
+            {
+                if (i == _selectedIndex)
+                {
+                    ForegroundColor = ConsoleColor.Black;
+                    BackgroundColor = ConsoleColor.Yellow;
+                }
+                else
+                {
+                    ForegroundColor = ConsoleColor.Yellow;
+                    BackgroundColor = ConsoleColor.Black;
+                }
+                WriteLine($"{_options[i]}");
+            }
+            ResetColor();
+        }
+
+        private void DisplayOptionsClassic()
+        {
+            WriteLine();
+
+            for (int i = 0; i < _options.Length; i++)
+            {
+                if (i == _selectedIndex)
+                {
+                    ForegroundColor = ConsoleColor.Black;
+                    BackgroundColor = ConsoleColor.White;
+                }
+                else
+                {
+                    ForegroundColor = ConsoleColor.White;
+                    BackgroundColor = ConsoleColor.Black;
+                }
+                WriteLine($"{_options[i]}");
+            }
+            ResetColor();
         }
     }
 }

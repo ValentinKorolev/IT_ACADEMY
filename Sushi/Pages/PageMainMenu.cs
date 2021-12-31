@@ -15,7 +15,7 @@ namespace SushiMarcet.Models
             else
                 _bannerPage = "What do you want?";
 
-            _options = new string[] { "View the menu", "Cart", "Go out" };
+            _options = new string[] { "View the menu", "Cart","Change Color", "Go out" };
         }
 
         public PageMainMenu(string viewSushiMenu)
@@ -86,6 +86,11 @@ namespace SushiMarcet.Models
                 case "Go out":
                     Clear();
                     WriteLine("<<Good Bye :)>>");
+                    break;
+                case "Change Color":
+                    Clear();
+                    PageChangeColor pageChangeColor = new();
+                    _ = pageChangeColor.Run();
                     break;
             }
         }

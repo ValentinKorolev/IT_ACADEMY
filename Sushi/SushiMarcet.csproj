@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Exception\" />
-    <Folder Include="Servises\" />
   </ItemGroup>
 
 </Project>

@@ -12,47 +12,14 @@ namespace SushiMarcet.Pages
         private readonly IEnumerable<SauceAndDishes> _dishes;
         private readonly string _goBack = "\nGo back";
 
+        SqlDishesRepository sqlDishes = new SqlDishesRepository();
+
         public PageMenuDishes()
         {
             _bannerPage = "Menu Sauce And Dishes";
 
-            _dishes = GetDishes();
+            _dishes = sqlDishes.GetItemList();
             _options = SetDishes(_dishes);
-        }
-
-        private string[] SetDishes(IEnumerable<SauceAndDishes> dishes)
-        {
-            string[] options = new string[dishes.Count() + 1];
-
-            for (int i = 0; i < dishes.Count(); i++)
-            {
-                options[i] = dishes.ElementAt(i).ToString();
-            }
-            options[^1] = _goBack;
-
-            return options;
-        }
-
-        private IEnumerable<SauceAndDishes> GetDishes()
-        {
-            try
-            {
-                using ApplicationContext db = new ApplicationContext();
-                return db.SauceAndDishes.ToList();
-            }
-            catch (Exception ex)
-            {
-                return GetDishesJson();
-            }
-        }
-
-        private IEnumerable<SauceAndDishes> GetDishesJson()
-        {
-            var fileName = File.ReadAllText(Observer.FileNameProduct);
-
-            var jsonObject = JsonConvert.DeserializeObject<ListProducts>(fileName);
-            
-            return jsonObject.SauceAndDishesMenu;
         }
 
         protected override void TransferPage(string[] options, int selectedIndex)
@@ -68,6 +35,19 @@ namespace SushiMarcet.Pages
                     _ = pageViewingProduct.Run();
                     break;
             }                
+        }
+
+        private string[] SetDishes(IEnumerable<SauceAndDishes> dishes)
+        {
+            string[] options = new string[dishes.Count() + 1];
+
+            for (int i = 0; i < dishes.Count(); i++)
+            {
+                options[i] = dishes.ElementAt(i).ToString();
+            }
+            options[^1] = _goBack;
+
+            return options;
         }
     }
 }

@@ -29,8 +29,8 @@ namespace SushiMarcet.Models
                 _options = new string[] {$"1.Orders",
                                          "2.Sushi",
                                          "3.Sauces and side dishes",
-                                         "4.Drinks",
-                                         "5.Support"};
+                                         "4.Drinks"
+                                        };
 
             }
         }
@@ -56,8 +56,6 @@ namespace SushiMarcet.Models
                 case "4.Drinks":
                     PageAdminDrinks pageAdminDrinks = new();
                     _ = pageAdminDrinks.Run();
-                    break;
-                case "5.Support":
                     break;
             }
         }

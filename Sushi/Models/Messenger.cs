@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Models
 {
-    internal class Message
+    internal class Messenger
     {
         private string _message;
         private Order _order;
 
-        public Message()
+        public Messenger()
         {           
 
         }
