@@ -1,61 +1,120 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SushiMarcet.Models
 {
+
     internal class Messenger
     {
-        private string _message;
-        private Order _order;
+        private TimeSpan _timeMessage = new (0,1,0);
+        
+        private string _nameAdmin = "Administrator Sushi Marcet";
+        private string _emailMarcet = "sush1marcet@gmail.com";
+        private string _pass = "VhGfTgOy6D";
+        private string _textMessage;
 
-        public Messenger()
-        {           
+        private MailAddress _from;
+        private MailAddress _to;
+        private MailMessage _sender;
 
+        private SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+
+        public void AcceptedOrderMessage(Order order)
+        {
+            _textMessage = $"{order.Cheque}" + $"\nYour order number: {order.Id}";
+
+            _from = new MailAddress(_emailMarcet, _nameAdmin);
+            _to = new MailAddress(order.EmailClient);
+
+            _sender = new(_from,_to);
+
+            _sender.Subject = "Your order is accepted";
+            _sender.Body = _textMessage;
+
+            smtp.Credentials = new NetworkCredential(_emailMarcet, _pass);
+            smtp.EnableSsl = true;
+            smtp.Send(_sender);
+            smtp.Dispose();
+
+            Thread.Sleep(_timeMessage);
         }
 
-        public void SendMessage(Order order, string message = null)
+        public void RejectedOrderMessage(Order order, string textMessage)
         {
-            string textMessage;
+            _textMessage = textMessage;
 
-            if (message is not null)
-            {
-                textMessage = message;
-            }
-            else
-            {
-                textMessage = "Your order is accepted\n" + $"{order.Cheque}" + $"\nYour order number: {order.Id}";
-            }
+            _from = new MailAddress(_emailMarcet, _nameAdmin);
+            _to = new MailAddress(order.EmailClient);
 
+            _sender = new(_from, _to);
 
-            MailAddress from = new MailAddress("sush1marcet@gmail.com", "Administrator Sushi Marcet");
+            _sender.Subject = "Your order is rejected";
+            _sender.Body = _textMessage;
 
-            MailAddress to = new MailAddress(order.EmailClient);
-
-            MailMessage m = new MailMessage(from, to);
-
-
-            if (message is not null)
-            {
-                m.Subject = "Your order has been rejected";
-            }
-            else
-            {
-                m.Subject = "Order Notification";
-            }
-
-            m.Body = textMessage;
-
-            SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
-
-            smtp.Credentials = new NetworkCredential("sush1marcet@gmail.com", "VhGfTgOy6D");
+            smtp.Credentials = new NetworkCredential(_emailMarcet, _pass);
             smtp.EnableSsl = true;
-            smtp.Send(m);
+            smtp.Send(_sender);
             smtp.Dispose();
+        }
+
+        public void CompletedOrderMessage(Order order)
+        {
+            _textMessage = $"Your order ({order.Id}) is completed and will be delivered soon";
+
+            _from = new MailAddress(_emailMarcet, _nameAdmin);
+            _to = new MailAddress(order.EmailClient);
+
+            _sender = new(_from, _to);
+
+            _sender.Subject = "Your order is completed";
+            _sender.Body = _textMessage;
+
+            smtp.Credentials = new NetworkCredential(_emailMarcet, _pass);
+            smtp.EnableSsl = true;
+            smtp.Send(_sender);
+            smtp.Dispose();
+
+            Thread.Sleep(_timeMessage);
+        }
+
+        public void OrderDeliveredByCourierMessage(Order order)
+        {
+            _textMessage = $"\nYour order ({order.Id}) has been delivered";
+
+            _from = new MailAddress(_emailMarcet, _nameAdmin);
+            _to = new MailAddress(order.EmailClient);
+
+            _sender = new(_from, _to);
+
+            _sender.Subject = "The order has been delivered";
+            _sender.Body = _textMessage;
+
+            smtp.Credentials = new NetworkCredential(_emailMarcet, _pass);
+            smtp.EnableSsl = true;
+            smtp.Send(_sender);
+            smtp.Dispose();
+
+            Thread.Sleep(_timeMessage);
+        }
+
+        public void OrderIsPaidMessage(Order order)
+        {
+            _textMessage = "Thank you for shopping at Sushi Marcet";
+
+            _from = new MailAddress(_emailMarcet, _nameAdmin);
+            _to = new MailAddress(order.EmailClient);
+
+            _sender = new(_from, _to);
+
+            _sender.Subject = "Your order is paid";
+            _sender.Body = _textMessage;
+
+            smtp.Credentials = new NetworkCredential(_emailMarcet, _pass);
+            smtp.EnableSsl = true;
+            smtp.Send(_sender);
+            smtp.Dispose();
+
+            Thread.Sleep(_timeMessage);
         }
     }
 }

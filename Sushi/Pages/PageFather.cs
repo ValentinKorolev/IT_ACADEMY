@@ -13,7 +13,7 @@ namespace SushiMarcet.Models
         protected string _bannerPage;
         protected ConsoleKey keyPressed;
 
-        protected string color = Observer.color;
+        private string color = Observer.color;
 
         public int Run()
         {
@@ -67,7 +67,7 @@ namespace SushiMarcet.Models
 
                 ResetColor();
 
-                DisplayOptionsBChB();
+                DisplayOptionsWhiteRed();
             }
             else if (color == "California")
             {
@@ -103,7 +103,7 @@ namespace SushiMarcet.Models
             }
         }
 
-        private void DisplayOptionsBChB()
+        private void DisplayOptionsWhiteRed()
         {
 
             WriteLine();

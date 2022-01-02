@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.DataBase
 {
-    internal class SqlOrdersRepository : IRepository<Order>
+    internal class SqlOrdersRepository : IRepository<Order>, IDisposable
     {
 
         private ApplicationContext db;
@@ -18,7 +18,17 @@ namespace SushiMarcet.DataBase
 
         public void Create(Order item)
         {
-            throw new NotImplementedException();
+            try
+            {
+                db.Add(item);
+                db.SaveChanges();
+
+            }catch (Exception ex)
+            {
+                Logger<PageOrder>.Error("Read InnerException", ex.InnerException);
+                WriteLine("Order not accepted! No internet connection!");
+                Thread.Sleep(10000);
+            }
         }
 
         public void Delete(int id)
@@ -36,9 +46,37 @@ namespace SushiMarcet.DataBase
             return db.Order.ToList();
         }
 
+        public IEnumerable<Order> GetItemList(StatusOrder status)
+        {
+            return db.Order.Where(_ =>_.Status == status).ToList();
+        }
+
         public void Update(Order item)
         {
-            throw new NotImplementedException();
+            Order updateOrder = db.Order.FirstOrDefault(_ => _.Id == item.Id);
+            updateOrder.Status = item.Status;
+            db.SaveChanges();
+        }
+
+
+        private bool disposed = false;
+
+        public virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    db.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

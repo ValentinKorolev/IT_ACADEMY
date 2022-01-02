@@ -11,7 +11,14 @@ namespace SushiMarcet.Pages.PagesAdministrotor
 {
     internal sealed class PageAdminViewOrders : PageFather
     {
+        public delegate void MessageHandler(Order order);
+        public event MessageHandler? OrderAcceptedMessageEvent;
+
+        SqlOrdersRepository sqlOrdersRepository = new SqlOrdersRepository();
+        JsonOrderRepository jsonOrderRepository = new JsonOrderRepository();
+
         private Order _currentOrder;  
+        Messenger _messenger;
 
         public PageAdminViewOrders(Order order)
         {
@@ -41,14 +48,24 @@ namespace SushiMarcet.Pages.PagesAdministrotor
 
         private void AcceptTheOrder(Order order)
         {
-            SendMessage(order);
+            _messenger = new Messenger();
+            OrderAcceptedMessageEvent += _messenger.AcceptedOrderMessage;
+            OrderAcceptedMessageEvent += _messenger.CompletedOrderMessage;
+            OrderAcceptedMessageEvent += _messenger.OrderDeliveredByCourierMessage;
+            OrderAcceptedMessageEvent += _messenger.OrderIsPaidMessage;            
+            OrderAcceptedMessageEvent(order);
+
+            //SendMessage(order);
+            
             order.Status = StatusOrder.InProgress;
-            UpdateDateOrder(order);
+            UpdateStatusOrder(order);
 
             Clear();
             WriteLine("An order acceptance letter has been sent");
             Thread.Sleep(4000);
         }
+
+
 
         //private void SendMessageAccepted(Order order)
         //{
@@ -64,7 +81,7 @@ namespace SushiMarcet.Pages.PagesAdministrotor
         //    m.Subject = "Order Notification";
         //    // текст письма
         //    m.Body = textMessage;
-            
+
         //    // адрес smtp-сервера и порт, с которого будем отправлять письмо
         //    SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
         //    // логин и пароль
@@ -74,46 +91,48 @@ namespace SushiMarcet.Pages.PagesAdministrotor
         //    smtp.Dispose();
         //}
 
-        private void UpdateDateOrder(Order order)
+        private void UpdateStatusOrder(Order order)
         {
-            UpdateDateOrderDb(order);
-            UpdateDateOrderJson(order);
+            sqlOrdersRepository.Update(order);
+            jsonOrderRepository.Update(order);
+            //UpdateDateOrderDb(order);
+            //UpdateDateOrderJson(order);
             
         }
 
-        private void UpdateDateOrderJson(Order order)
-        {
-            ListOrders model = new ListOrders();
+        //private void UpdateDateOrderJson(Order order)
+        //{
+        //    ListOrders model = new ListOrders();
 
-            if (File.Exists(Observer.FileNameOrders))
-            {
-                var fileName = File.ReadAllText(Observer.FileNameOrders);
-                var ordersJson = JsonConvert.DeserializeObject<ListOrders>(fileName);
+        //    if (File.Exists(Observer.FileNameOrders))
+        //    {
+        //        var fileName = File.ReadAllText(Observer.FileNameOrders);
+        //        var ordersJson = JsonConvert.DeserializeObject<ListOrders>(fileName);
 
-                model.Orders = ordersJson.Orders;
+        //        model.Orders = ordersJson.Orders;
 
-                int index = model.Orders.IndexOf(model.Orders.FirstOrDefault(_ => _.Id == order.Id));
-                model.Orders[index] = order;
-            }
-            else
-            {
-                Clear();
-                WriteLine("File Orders.json not found");
-                Thread.Sleep(4000);
+        //        int index = model.Orders.IndexOf(model.Orders.FirstOrDefault(_ => _.Id == order.Id));
+        //        model.Orders[index] = order;
+        //    }
+        //    else
+        //    {
+        //        Clear();
+        //        WriteLine("File Orders.json not found");
+        //        Thread.Sleep(4000);
 
-                BackToPageAdminOrders();
-            }
-        }
+        //        BackToPageAdminOrders();
+        //    }
+        //}
 
-        private void UpdateDateOrderDb(Order order)
-        {
-            using(ApplicationContext db = new ApplicationContext())
-            {
-                Order updateOrder = db.Order.FirstOrDefault(_ => _.Id == order.Id);
-                updateOrder.Status = order.Status;
-                db.SaveChanges();
-            }
-        }
+        //private void UpdateDateOrderDb(Order order)
+        //{
+        //    using(ApplicationContext db = new ApplicationContext())
+        //    {
+        //        Order updateOrder = db.Order.FirstOrDefault(_ => _.Id == order.Id);
+        //        updateOrder.Status = order.Status;
+        //        db.SaveChanges();
+        //    }
+        //}
 
         private void RejectAnOrder(Order order)
         {
@@ -130,11 +149,11 @@ namespace SushiMarcet.Pages.PagesAdministrotor
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
 
-                SendMessage(order, message);
+                //SendMessage(order, message);
 
                 order.Status = StatusOrder.Rejected;
 
-                UpdateDateOrder(order);
+                UpdateStatusOrder(order);
 
                 Clear();
                 WriteLine($"Order with id: {order.Id} - REJECTED");
@@ -147,45 +166,45 @@ namespace SushiMarcet.Pages.PagesAdministrotor
             BackToPageAdminOrders();
         }
 
-        private void SendMessage(Order order, string message = null)
-        {
-            string textMessage;
+        //private void SendMessage(Order order, string message = null)
+        //{
+        //    string textMessage;
 
-            if (message is not null)
-            {
-                 textMessage = message;
-            }
-            else
-            {
-                textMessage = "Your order is accepted\n" + $"{order.Cheque}" + $"\nYour order number: {order.Id}";
-            }
+        //    if (message is not null)
+        //    {
+        //         textMessage = message;
+        //    }
+        //    else
+        //    {
+        //        textMessage = "Your order is accepted\n" + $"{order.Cheque}" + $"\nYour order number: {order.Id}";
+        //    }
             
 
-            MailAddress from = new MailAddress("sush1marcet@gmail.com", "Administrator Sushi Marcet");
+        //    MailAddress from = new MailAddress("sush1marcet@gmail.com", "Administrator Sushi Marcet");
 
-            MailAddress to = new MailAddress(order.EmailClient);
+        //    MailAddress to = new MailAddress(order.EmailClient);
 
-            MailMessage m = new MailMessage(from, to);
+        //    MailMessage m = new MailMessage(from, to);
 
 
-            if (message is not null)
-            {
-                m.Subject = "Your order has been rejected";
-            }
-            else
-            {
-                m.Subject = "Order Notification";
-            }            
+        //    if (message is not null)
+        //    {
+        //        m.Subject = "Your order has been rejected";
+        //    }
+        //    else
+        //    {
+        //        m.Subject = "Order Notification";
+        //    }            
             
-            m.Body = textMessage;
+        //    m.Body = textMessage;
             
-            SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+        //    SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
             
-            smtp.Credentials = new NetworkCredential("sush1marcet@gmail.com", "VhGfTgOy6D");
-            smtp.EnableSsl = true;
-            smtp.Send(m);
-            smtp.Dispose();
-        }
+        //    smtp.Credentials = new NetworkCredential("sush1marcet@gmail.com", "VhGfTgOy6D");
+        //    smtp.EnableSsl = true;
+        //    smtp.Send(m);
+        //    smtp.Dispose();
+        //}
 
         private void BackToPageAdminOrders()
         {

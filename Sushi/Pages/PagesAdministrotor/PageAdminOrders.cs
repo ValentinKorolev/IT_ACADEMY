@@ -13,6 +13,11 @@ namespace SushiMarcet.Pages
         private const string NameAdmin = "Admin123";
         private const string PassAdmin = "122345";
 
+        List<Order> orders = new List<Order>();
+
+        SqlOrdersRepository sqlOrdersRepository = new SqlOrdersRepository();
+        JsonOrderRepository jsonOrderRepository = new JsonOrderRepository();
+
         public PageAdminOrders()
         {
             _bannerPage = "Orders";
@@ -53,76 +58,23 @@ namespace SushiMarcet.Pages
 
         private void GetOrdersInProgress()
         { 
+            
             do
             {
                 Clear();
                 WriteLine("List orders in progress (Press ESC to go back)");
                 WriteLine();
 
-                //GetOrdersInProgressDb();
-                GetOrdersInProgressJson();
+                orders = (List<Order>)sqlOrdersRepository.GetItemList(StatusOrder.InProgress);
+                // orders = (List<Order>)jsonOrderRepository.GetItemList(StatusOrder.InProgress);
+                sqlOrdersRepository.Dispose();
+
+                ShowOrdes(orders);
 
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
 
             } while (keyPressed != ConsoleKey.Escape) ;
-        }
-
-        private void GetOrdersInProgressJson()
-        {
-            var fileName = File.ReadAllText(Observer.FileNameOrders);
-            var objectJson = JsonConvert.DeserializeObject<ListOrders>(fileName);
-
-            var orders = objectJson.Orders.FindAll(_ => _.Status == StatusOrder.InProgress);
-
-            if (orders.Count == 0)
-            {
-                Clear();
-                WriteLine("No rejected orders found");
-                Thread.Sleep(3000);
-
-                PageAdminOrdersRun();
-            }
-            foreach (var order in orders)
-            {
-                WriteLine(order.ToString());
-                WriteLine();
-            }
-        }
-
-        private void GetOrdersInProgressDb()
-        {
-            try
-            {
-
-                List<Order> orders = new List<Order>();
-
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    orders = db.Order.Where(_ => _.Status == StatusOrder.InProgress).ToList();
-
-                    if (orders.Count == 0)
-                    {
-                        Clear();
-                        WriteLine("No completed orders found");
-                        Thread.Sleep(3000);
-
-                        PageAdminOrdersRun();
-                    }
-                    else
-                    {
-                        foreach (var order in orders)
-                        {
-                            WriteLine(order.ToString());
-                            WriteLine();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
         }
 
         private void GetRejectedOrders()
@@ -133,70 +85,16 @@ namespace SushiMarcet.Pages
                 WriteLine("List of rejected orders (Press ESC to go back)");
                 WriteLine();
 
-                //GetRejectedOrdersJson();
-                GetRejectedOrdersDb();
+                orders = (List<Order>)sqlOrdersRepository.GetItemList(StatusOrder.Rejected);
+                //orders = (List<Order>)jsonOrderRepository.GetItemList(StatusOrder.Rejected);
+                sqlOrdersRepository.Dispose();
+
+                ShowOrdes(orders);
 
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
 
             } while (keyPressed != ConsoleKey.Escape);
-        }
-
-        private void GetRejectedOrdersJson()
-        {
-            var fileName = File.ReadAllText(Observer.FileNameOrders);
-            var objectJson = JsonConvert.DeserializeObject<ListOrders>(fileName);
-
-            var orders = objectJson.Orders.FindAll(_ => _.Status == StatusOrder.Rejected);
-
-            if (orders.Count == 0)
-            {
-                Clear();
-                WriteLine("No rejected orders found");
-                Thread.Sleep(3000);
-
-                PageAdminOrdersRun();
-            }
-            foreach (var order in orders)
-            {
-                WriteLine(order.ToString());
-                WriteLine();
-            }
-        }
-
-        private void GetRejectedOrdersDb()
-        {
-            try
-            {
-
-                List<Order> orders = new List<Order>();
-
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    orders = db.Order.Where(_ => _.Status == StatusOrder.Rejected).ToList();
-
-                    if (orders.Count == 0)
-                    {
-                        Clear();
-                        WriteLine("No completed orders found");
-                        Thread.Sleep(3000);
-
-                        PageAdminOrdersRun();
-                    }
-                    else
-                    {
-                        foreach (var order in orders)
-                        {
-                            WriteLine(order.ToString());
-                            WriteLine();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
         }
 
         private void GetOrdersCompleted()
@@ -207,8 +105,11 @@ namespace SushiMarcet.Pages
                 WriteLine("List of completed orders (Press ESC to go back)");
                 WriteLine();
 
-                //GetOrdersCompletedDb();
-                GetOrdersCompletedJson();
+                orders = (List<Order>)sqlOrdersRepository.GetItemList(StatusOrder.Completed);    
+                //orders = (List<Order>)jsonOrderRepository.GetItemList(StatusOrder.Completed);
+                sqlOrdersRepository.Dispose();
+
+                ShowOrdes(orders);
 
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
@@ -217,72 +118,20 @@ namespace SushiMarcet.Pages
 
         }
 
-        private void GetOrdersCompletedJson()
+        private void ShowOrdes(List<Order> orders)
         {
-
-            if (File.Exists(Observer.FileNameOrders))
+            if (orders.Count == 0)
             {
-
-                var fileName = File.ReadAllText(Observer.FileNameOrders);
-                var objectJson = JsonConvert.DeserializeObject<ListOrders>(fileName);
-
-                var orders = objectJson.Orders.FindAll(_ => _.Status == StatusOrder.Completed);
-                
-                if(orders.Count == 0)
-                {
-                    Clear();
-                    WriteLine("No completed orders found");
-                    Thread.Sleep(3000);
-
-                    PageAdminOrdersRun();
-                }
+                WriteLine();
+                WriteLine("Not found");
+            }
+            else
+            {
                 foreach (var order in orders)
                 {
                     WriteLine(order.ToString());
                     WriteLine();
-                }                
-            }
-            else
-            {
-                Clear();
-                WriteLine("File Orders.json not found");
-                Thread.Sleep(3000);
-
-            }
-        }
-
-        private void GetOrdersCompletedDb()
-        {
-            try
-            {
-
-                List<Order> orders = new List<Order>();
-
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    orders = db.Order.Where(_ => _.Status == StatusOrder.Completed).ToList();
-                    
-                    if(orders.Count == 0)
-                    {
-                        Clear();
-                        WriteLine("No completed orders found");
-                        Thread.Sleep(3000);
-
-                        PageAdminOrdersRun();
-                    }
-                    else
-                    {
-                        foreach (var order in orders)
-                        {
-                            WriteLine(order.ToString());
-                            WriteLine();
-                        }
-                    }
                 }
-            }
-            catch(Exception ex)
-            {
-                
             }
         }
 

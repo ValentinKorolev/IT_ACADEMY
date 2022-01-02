@@ -35,7 +35,7 @@ namespace SushiMarcet
         {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
 
-            return $"{Name}; Number of servings: {Servings}; Price: {Price:c}";
+            return $"{Name}| Number of servings: {Servings}| Price: {Price:c}";
         }
 
         public string ShowDataForAdmin()
@@ -50,8 +50,8 @@ namespace SushiMarcet
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
 
             return Servings == numServings || Servings == 0
-                ? $"{Name}; Description: {Description}; Price: {Price:c}"
-                : $"{Name}; Description: {Description}; Servings: {Servings} Price: {Price:c}"; 
+                ? $"{Name}| Description: {Description}| Price: {Price:c}"
+                : $"{Name}| Description: {Description}| Servings: {Servings}| Price: {Price:c}"; 
         }
     }  
 }

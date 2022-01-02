@@ -11,7 +11,7 @@ namespace SushiMarcet.Pages
         public PageCartChanges()
         {
             _bannerPage = "Select the product you want to make changes to";
-            _options = GetOptions();            
+            _options = SetOptions();            
         }
 
         public PageCartChanges(object product)
@@ -21,7 +21,7 @@ namespace SushiMarcet.Pages
             _options = new string[] { "Change number of servings", "Remove from the cart", _goBack};
         }
 
-        private string[] GetOptions()
+        private string[] SetOptions()
         {
             string[] option = new string [Cart.cartList.Count + 1];
 
@@ -47,7 +47,7 @@ namespace SushiMarcet.Pages
                     ChangesServings(_currentProduct);                 
                     break;
                 case "Remove from the cart":
-                    RemoveFromCard(_currentProduct);
+                    RemoveFromCart(_currentProduct);
                     break;
                 default:
                     PageCartChanges page = new(Cart.cartList.ElementAt(selectedIndex));
@@ -81,7 +81,7 @@ namespace SushiMarcet.Pages
             _ = pageCartChanges.Run();
         }
 
-        private void RemoveFromCard(object product)
+        private void RemoveFromCart(object product)
         {
             Cart.cartList.Remove(product);
 

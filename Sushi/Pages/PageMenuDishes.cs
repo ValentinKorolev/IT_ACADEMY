@@ -19,7 +19,7 @@ namespace SushiMarcet.Pages
             _bannerPage = "Menu Sauce And Dishes";
 
             _dishes = sqlDishes.GetItemList();
-            _options = SetDishes(_dishes);
+            _options = SetOptions(_dishes);
         }
 
         protected override void TransferPage(string[] options, int selectedIndex)
@@ -37,7 +37,7 @@ namespace SushiMarcet.Pages
             }                
         }
 
-        private string[] SetDishes(IEnumerable<SauceAndDishes> dishes)
+        private string[] SetOptions(IEnumerable<SauceAndDishes> dishes)
         {
             string[] options = new string[dishes.Count() + 1];
 

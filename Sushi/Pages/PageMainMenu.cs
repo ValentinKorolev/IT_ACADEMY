@@ -25,7 +25,6 @@ namespace SushiMarcet.Models
                                       $"{Observer.Futomaki}", 
                                       $"{Observer.Nigiri}",
                                       $"{Observer.BakedSushi}",
-                                      "Sets",
                                       "Drinks",
                                       "Sauces and side dishes",
                                       "\nGo Back" };
@@ -35,35 +34,25 @@ namespace SushiMarcet.Models
         {
             switch (options[selectedIndex])
             {
-                case "View the menu":
-                    Clear();
+                case "View the menu":                    
                     PageMainMenu page = new("View the menu");
                     _ = page.Run();
                     break;
                 case Observer.Uramaki:
-                    Clear();
                     PageMenuSushi pageUramaki = new(Observer.Uramaki);
                     _ = pageUramaki.Run();
                     break;
                 case Observer.Futomaki:
-                    Clear();
                     PageMenuSushi pageFutomaki = new(Observer.Futomaki);
                     _ = pageFutomaki.Run();
                     break;
                 case Observer.Nigiri:
-                    Clear();
                     PageMenuSushi pageNigiri = new(Observer.Nigiri);
                     _ = pageNigiri.Run();
                     break;
                 case Observer.BakedSushi:
-                    Clear();
                     PageMenuSushi pageBakedSushi = new(Observer.BakedSushi);
                     _ = pageBakedSushi.Run();
-                    break;
-                case Observer.Sets:
-                    Clear();
-                    PageMenuSushi pageSets = new(Observer.Sets);
-                    _ = pageSets.Run();
                     break;
                 case "Sauces and side dishes":
                     PageMenuDishes pageDishes = new();
@@ -74,12 +63,10 @@ namespace SushiMarcet.Models
                     _ = pageMenuDrinks.Run();
                     break;
                 case "\nGo Back":
-                    Clear();
                     PageMainMenu pageMainMenu = new();
                     _ = pageMainMenu.Run();
                     break;
                 case "Cart":
-                    Clear();
                     PageCart pageBasket = new();
                     _ = pageBasket.Run();
                     break;
@@ -88,7 +75,6 @@ namespace SushiMarcet.Models
                     WriteLine("<<Good Bye :)>>");
                     break;
                 case "Change Color":
-                    Clear();
                     PageChangeColor pageChangeColor = new();
                     _ = pageChangeColor.Run();
                     break;

@@ -10,15 +10,11 @@ namespace SushiMarcet.Pages
 {
     internal sealed class PageOrder : PageFather
     {
-
         private string _name;
         private string _email;
         private string _phoneNumber;
         private string _adressDelivery;
-
-        
-        
-        
+                        
         public PageOrder(string? name = null, string? email = null, string? phoneNumber = null, string? adressDelivery = null)
         {
             _name = name;
@@ -57,7 +53,7 @@ namespace SushiMarcet.Pages
             else if (options[selectedIndex].Contains("To order"))
             {
                 bool _isCorrectOrder = IsCorrectOrder();
-                SendOrder(_isCorrectOrder);
+                ToOrder(_isCorrectOrder);
             }
             else if (options[selectedIndex].Contains("Go back"))
             {
@@ -74,7 +70,7 @@ namespace SushiMarcet.Pages
                 return false;
         }
 
-        private void SendOrder(bool isCorrectOrder)
+        private void ToOrder(bool isCorrectOrder)
         {
             if(isCorrectOrder == true)
             {

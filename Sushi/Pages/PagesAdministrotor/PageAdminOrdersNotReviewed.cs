@@ -10,7 +10,9 @@ namespace SushiMarcet.Pages.PagesAdministrotor
     internal class PageAdminOrdersNotReviewed : PageFather
     {
         List<Order> allOrders;
-        List<Order> ordersNotConsidered;
+
+        SqlOrdersRepository sqlOrdersRepository = new SqlOrdersRepository();
+        JsonOrderRepository jsonOrderRepository = new JsonOrderRepository();
 
         private string _goBack = "\nGo back";
 
@@ -18,7 +20,8 @@ namespace SushiMarcet.Pages.PagesAdministrotor
         {
             _bannerPage = "List of orders not reviewed";
 
-            allOrders = GetAllOrders();
+            allOrders = (List<Order>?)sqlOrdersRepository.GetItemList(StatusOrder.NotReviewed);
+            //allOrders = (List<Order>?)jsonOrderRepository.GetItemList(StatusOrder.NotReviewed);
 
             _options = SetOptions(allOrders);
         }
@@ -37,21 +40,6 @@ namespace SushiMarcet.Pages.PagesAdministrotor
             }
         }
 
-        private List<Order> GetAllOrders()
-        {
-            try
-            {
-                allOrders = GetAllOrdersFromDb();
-                return allOrders;
-
-            }
-            catch (Exception ex)
-            {
-                allOrders = GetAllOrdersFromJson();
-                return allOrders;
-            }
-        }
-
         private string[] SetOptions(List<Order> orders)
         {
             string[] options = new string[orders.Count() + 1];
@@ -66,32 +54,6 @@ namespace SushiMarcet.Pages.PagesAdministrotor
             options[^1] = _goBack;
 
             return options;
-        }
-
-        private List<Order> GetAllOrdersFromDb()
-        {
-            using (ApplicationContext db = new ApplicationContext())
-            {
-               return db.Order.Where(_ => _.Status == StatusOrder.NotReviewed).ToList();
-            }
-        }
-
-        private List<Order> GetAllOrdersFromJson()
-        {
-            if (File.Exists(Observer.FileNameOrders))
-            {
-                var fileName = File.ReadAllText(Observer.FileNameOrders);
-                var orders = JsonConvert.DeserializeObject<ListOrders>(fileName);
-                var listOrders = orders.Orders.Where(_ => _.Status == StatusOrder.NotReviewed).ToList();
-
-                return listOrders;
-            }
-            else
-            {
-                WriteLine("File Orders.Json not found");
-                BackToPageAdminOrders();
-                return null;
-            }
         }
 
         private void BackToPageAdminOrders()
