@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Pages
 {
-    internal class PageAdminDrinks : PageFather
+    internal sealed class PageAdminDrinks : PageFather
     {
         private const string NameAdmin = "Admin123";
         private const string PassAdmin = "122345";

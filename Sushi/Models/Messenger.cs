@@ -6,12 +6,20 @@ namespace SushiMarcet.Models
 
     internal class Messenger
     {
+        public delegate void MessageHandler(Order order);
+        public event MessageHandler OrderAcceptedMessageEvent;
+        public event MessageHandler OrderRejectedMessageEvent;
+
+        SqlOrdersRepository sqlOrdersRepository;
+        JsonOrderRepository jsonOrderRepository;
+
         private TimeSpan _timeMessage = new (0,1,0);
         
         private string _nameAdmin = "Administrator Sushi Marcet";
         private string _emailMarcet = "sush1marcet@gmail.com";
         private string _pass = "VhGfTgOy6D";
-        private string _textMessage;
+        private string _textAcceptedMessage;
+        private string _textRejectedMessage;
 
         private MailAddress _from;
         private MailAddress _to;
@@ -19,9 +27,35 @@ namespace SushiMarcet.Models
 
         private SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
 
-        public void AcceptedOrderMessage(Order order)
+        private Order _order;
+
+        public Messenger(Order order, string message = null)
         {
-            _textMessage = $"{order.Cheque}" + $"\nYour order number: {order.Id}";
+            sqlOrdersRepository = new SqlOrdersRepository();
+            jsonOrderRepository = new JsonOrderRepository();
+
+            _order = order;
+            _textRejectedMessage = message;
+        }
+
+        public void SendMessageAccepted()
+        {
+            OrderAcceptedMessageEvent += AcceptedOrderMessage;
+            OrderAcceptedMessageEvent += CompletedOrderMessage;
+            OrderAcceptedMessageEvent += OrderDeliveredByCourierMessage;
+            OrderAcceptedMessageEvent += OrderIsPaidMessage;
+            OrderAcceptedMessageEvent(_order);
+        }
+
+        public void SendMessageRejected()
+        {
+            OrderRejectedMessageEvent += RejectedOrderMessage;
+            OrderRejectedMessageEvent(_order);
+        }
+
+        private void AcceptedOrderMessage(Order order)
+        {
+            _textAcceptedMessage = $"{order.Cheque}" + $"\nYour order number: {order.Id}";
 
             _from = new MailAddress(_emailMarcet, _nameAdmin);
             _to = new MailAddress(order.EmailClient);
@@ -29,37 +63,41 @@ namespace SushiMarcet.Models
             _sender = new(_from,_to);
 
             _sender.Subject = "Your order is accepted";
-            _sender.Body = _textMessage;
+            _sender.Body = _textAcceptedMessage;
 
             smtp.Credentials = new NetworkCredential(_emailMarcet, _pass);
             smtp.EnableSsl = true;
             smtp.Send(_sender);
-            smtp.Dispose();
+
+            order.Status = StatusOrder.InProgress;
+            SaveData(order);
 
             Thread.Sleep(_timeMessage);
         }
 
-        public void RejectedOrderMessage(Order order, string textMessage)
+        private void RejectedOrderMessage(Order _order)
         {
-            _textMessage = textMessage;
-
             _from = new MailAddress(_emailMarcet, _nameAdmin);
-            _to = new MailAddress(order.EmailClient);
+            _to = new MailAddress(_order.EmailClient);
 
             _sender = new(_from, _to);
 
             _sender.Subject = "Your order is rejected";
-            _sender.Body = _textMessage;
+            _sender.Body = _textRejectedMessage;
 
             smtp.Credentials = new NetworkCredential(_emailMarcet, _pass);
             smtp.EnableSsl = true;
             smtp.Send(_sender);
+
+            _order.Status = StatusOrder.Rejected;
+            SaveData(_order);
+
             smtp.Dispose();
         }
 
-        public void CompletedOrderMessage(Order order)
+        private void CompletedOrderMessage(Order order)
         {
-            _textMessage = $"Your order ({order.Id}) is completed and will be delivered soon";
+            _textAcceptedMessage = $"Your order ({order.Id}) is completed and will be delivered soon";
 
             _from = new MailAddress(_emailMarcet, _nameAdmin);
             _to = new MailAddress(order.EmailClient);
@@ -67,19 +105,21 @@ namespace SushiMarcet.Models
             _sender = new(_from, _to);
 
             _sender.Subject = "Your order is completed";
-            _sender.Body = _textMessage;
+            _sender.Body = _textAcceptedMessage;
 
             smtp.Credentials = new NetworkCredential(_emailMarcet, _pass);
             smtp.EnableSsl = true;
             smtp.Send(_sender);
-            smtp.Dispose();
+
+            order.Status = StatusOrder.Completed;
+            SaveData(order);
 
             Thread.Sleep(_timeMessage);
         }
 
-        public void OrderDeliveredByCourierMessage(Order order)
+        private void OrderDeliveredByCourierMessage(Order order)
         {
-            _textMessage = $"\nYour order ({order.Id}) has been delivered";
+            _textAcceptedMessage = $"\nYour order ({order.Id}) has been delivered";
 
             _from = new MailAddress(_emailMarcet, _nameAdmin);
             _to = new MailAddress(order.EmailClient);
@@ -87,19 +127,21 @@ namespace SushiMarcet.Models
             _sender = new(_from, _to);
 
             _sender.Subject = "The order has been delivered";
-            _sender.Body = _textMessage;
+            _sender.Body = _textAcceptedMessage;
 
             smtp.Credentials = new NetworkCredential(_emailMarcet, _pass);
             smtp.EnableSsl = true;
             smtp.Send(_sender);
-            smtp.Dispose();
+
+            order.Status = StatusOrder.Delivered;
+            SaveData(order);
 
             Thread.Sleep(_timeMessage);
         }
 
-        public void OrderIsPaidMessage(Order order)
+        private void OrderIsPaidMessage(Order order)
         {
-            _textMessage = "Thank you for shopping at Sushi Marcet";
+            _textAcceptedMessage = "Thank you for shopping at Sushi Marcet";
 
             _from = new MailAddress(_emailMarcet, _nameAdmin);
             _to = new MailAddress(order.EmailClient);
@@ -107,14 +149,21 @@ namespace SushiMarcet.Models
             _sender = new(_from, _to);
 
             _sender.Subject = "Your order is paid";
-            _sender.Body = _textMessage;
+            _sender.Body = _textAcceptedMessage;
 
             smtp.Credentials = new NetworkCredential(_emailMarcet, _pass);
             smtp.EnableSsl = true;
             smtp.Send(_sender);
             smtp.Dispose();
 
-            Thread.Sleep(_timeMessage);
+            order.Status = StatusOrder.IsPaid;
+            SaveData(order);
+        }
+
+        private void SaveData(Order order)
+        {
+            sqlOrdersRepository.Update(order);
+            jsonOrderRepository.Update(order);
         }
     }
 }

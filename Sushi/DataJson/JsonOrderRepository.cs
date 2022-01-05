@@ -22,7 +22,7 @@ namespace SushiMarcet.DataJson
 
                 model.Orders.Add(item);
 
-                File.Delete(Observer.FileNameProduct);
+                File.Delete(Observer.FileNameOrders);
 
                 string _jsonObject = JsonConvert.SerializeObject(model);
                 File.AppendAllText(Observer.FileNameOrders, _jsonObject);

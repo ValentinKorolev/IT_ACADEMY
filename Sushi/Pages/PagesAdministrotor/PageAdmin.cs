@@ -13,6 +13,8 @@ namespace SushiMarcet.Models
         private const string NameAdmin = "Admin123";
         private const string PassAdmin = "122345";
 
+        private MyLogger<PageAdmin> logger = new();
+
         public PageAdmin(string name, string pass)
         {
             if (NameAdmin != name || PassAdmin != pass)
@@ -24,6 +26,8 @@ namespace SushiMarcet.Models
             }
             else
             {
+                logger.Info("The administrator has logged into the program");
+
                 _bannerPage = "Administrator Page";
                 
                 _options = new string[] {$"1.Orders",

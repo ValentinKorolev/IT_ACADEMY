@@ -22,11 +22,9 @@ namespace SushiMarcet.Models
                 {
                     db.Sushi.Add(item);
                     db.SaveChanges();
-                    Logger<PageAdmin>.Debug($"Admin added sushi: {item.ShowDataForAdmin()}");
                 }
                 catch (Exception ex)
                 {
-                    Logger<PageAdmin>.Error("Read InnerException", ex.InnerException);
                     WriteLine("Error, please look logs!");
                     Thread.Sleep(10000);
                 } 

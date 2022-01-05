@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Pages.PagesAdministrotor
 {
-    internal class PageAdminOrdersNotReviewed : PageFather
+    internal sealed class PageAdminOrdersNotReviewed : PageFather
     {
         List<Order> allOrders;
 

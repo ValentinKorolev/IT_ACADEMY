@@ -1,12 +1,18 @@
-﻿using Microsoft.Data.SqlClient;
+﻿
+
+using SushiMarcet.MyLogger;
+using System.Diagnostics;
+using System.Reflection;
 
 class Programm
 {
     static void Main(string[] args)
     {
+        MyLogger<Programm> MyLogger = new();
+
         try
         {
-            Logger<Programm>.Info("The application is running");
+            MyLogger.Info("The application is running");
 
             Bot.SayHello();
             Bot.AskNameUser();
@@ -14,11 +20,14 @@ class Programm
         }
         catch (Exception ex)
         {
-            Logger<Programm>.Error(" ", ex.InnerException);
+            Clear();
+            WriteLine("Program failure, sorry :(");
+
+            MyLogger.Error("Program failure", ex);
         }
         finally
         {
-            Logger<Programm>.Info("The application has shut down");
+            MyLogger.Info("The application has shut down");
         }                   
     }
 }

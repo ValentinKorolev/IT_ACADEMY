@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyLogger
+namespace SushiMarcet.MyLogger
 {
     public enum LogLevel
     {
-        INF = 0,
-        DEB = 1,
-        ERR = 2       
+        INFO,
+        DEBUG,
+        WARNING,
+        ERROR,
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Pages
 {
-    internal class PageMenuDrinks : PageFather
+    internal sealed class PageMenuDrinks : PageFather
     {
         private readonly IEnumerable<Drinks> _drinks;
         private readonly string _goBack = "\nGo back";

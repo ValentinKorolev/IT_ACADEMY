@@ -22,11 +22,10 @@ namespace SushiMarcet.DataBase
             {
                 db.Drinks.Add(item);
                 db.SaveChanges();
-                Logger<PageAdmin>.Debug($"Admin added drink: {item.ShowDataForAdmin()}");
+
             }
             catch (Exception ex)
             {
-                Logger<PageAdmin>.Error("Read InnerException", ex.InnerException);
                 WriteLine("Error, please look logs!");
                 Thread.Sleep(10000);
             }

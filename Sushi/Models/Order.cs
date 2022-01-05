@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SushiMarcet.Attributes;
+
 
 namespace SushiMarcet.Models
 {
@@ -12,8 +9,11 @@ namespace SushiMarcet.Models
         InProgress = 2,
         Rejected = 3,
         Completed = 4,
+        Delivered = 5,
+        IsPaid = 6,
     }
 
+    [OrderValidate]
     internal class Order
     {
         public Guid Id { get; set; }

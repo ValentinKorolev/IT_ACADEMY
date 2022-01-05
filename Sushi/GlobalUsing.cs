@@ -1,4 +1,5 @@
 ﻿global using static System.Console;
+global using SushiMarcet.MyLogger;
 global using SushiMarcet.Interfaces;
 global using SushiMarcet.Pages;
 global using SushiMarcet.Models;

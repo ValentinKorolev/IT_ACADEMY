@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,6 +11,10 @@ namespace SushiMarcet.Pages
 {
     internal sealed class PageOrder : PageFather
     {
+        SqlOrdersRepository sqlOrdersRepository;
+        JsonOrderRepository jsonOrderRepository;
+        
+
         private string _name;
         private string _email;
         private string _phoneNumber;
@@ -37,120 +42,57 @@ namespace SushiMarcet.Pages
             if (options[selectedIndex].Contains("Name"))
             {
                 GetName();
+                PageOrderRun();
             }
             else if (options[selectedIndex].Contains("Email"))
             {
                 GetEmail();
+                PageOrderRun();
             }
             else if (options[selectedIndex].Contains("Phone"))
             {
                 GetPhoneNumber();
+                PageOrderRun();
             }
             else if (options[selectedIndex].Contains("Adress"))
             {
                 GetAdressDelivery();
+                PageOrderRun();
             }
             else if (options[selectedIndex].Contains("To order"))
             {
-                bool _isCorrectOrder = IsCorrectOrder();
-                ToOrder(_isCorrectOrder);
-            }
-            else if (options[selectedIndex].Contains("Go back"))
-            {
-                PageCart pageCart = new PageCart();
-                _ = pageCart.Run();
-            }
-        }
-
-        private bool IsCorrectOrder()
-        {
-            if (_name is not null && _email is not null && _phoneNumber is not null && _adressDelivery is not null) 
-                return true;
-            else 
-                return false;
-        }
-
-        private void ToOrder(bool isCorrectOrder)
-        {
-            if(isCorrectOrder == true)
-            {
                 Order order = new();
-
                 order.NameClient = _name;
                 order.EmailClient = _email;
                 order.PhoneNumberClient = _phoneNumber;
                 order.AdressDeliveryClient = _adressDelivery;
-
                 order.Cheque = Cart.ShowTheContents() + Cart.ReturnOrderAmount();
 
-                Action addOrder = () => AddOrderDb(order); 
-
-                addOrder +=() => AddOrderJson(order);
-
-                addOrder();
-
-                Clear();
-                WriteLine("Your order has been accepted for processing");
-                Thread.Sleep(4000);
-
-                Cart.cartList.Clear();
-
-                PageMainMenu pageMainMenu = new PageMainMenu();
-                _ = pageMainMenu.Run();
+                ValidateOrderAndToOrder(order);
             }
-            else
+            else if (options[selectedIndex].Contains("Go back"))
             {
-                Clear();
-                WriteLine("All fields are required! The order is not made.");
-                Thread.Sleep(5000);
-                PageOrderRun();
+                PageCartRun();
             }
         }
 
-        private void AddOrderJson(Order order)
+        private void ToOrder(Order order)
         {
-            ListOrders model = new ListOrders();
 
-            if (File.Exists(Observer.FileNameOrders))
-            {
-                var fileName = File.ReadAllText(Observer.FileNameOrders);
-                var ordersJson = JsonConvert.DeserializeObject<ListOrders>(fileName);
+            sqlOrdersRepository = new SqlOrdersRepository();
+            sqlOrdersRepository.Create(order);
+            sqlOrdersRepository.Dispose();
 
-                model.Orders = ordersJson.Orders; 
+            jsonOrderRepository = new JsonOrderRepository();
+            jsonOrderRepository.Create(order);
 
-                model.Orders.Add(order);
+            Clear();
+            WriteLine("Your order has been accepted for processing");
+            Thread.Sleep(4000);
 
-                File.Delete(Observer.FileNameProduct);
+            Cart.cartList.Clear();
 
-                string _jsonObject = JsonConvert.SerializeObject(model);
-                File.AppendAllText(Observer.FileNameOrders, _jsonObject);
-            }
-            else
-            {
-                model.Orders.Add(order);
-
-                string _jsonObject = JsonConvert.SerializeObject(model);
-
-                File.AppendAllText(Observer.FileNameOrders, _jsonObject);
-            }
-        }
-
-        private void AddOrderDb(Order order)
-        {
-            try
-            {
-                using (ApplicationContext db = new ApplicationContext())
-                {
-                    db.Order.Add(order);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger<PageOrder>.Error("Read InnerException", ex.InnerException);
-                WriteLine("Error, please look logs!");
-                Thread.Sleep(10000);
-            }            
+            PageMainMenuRun();
         }
 
         private void GetName()
@@ -158,24 +100,9 @@ namespace SushiMarcet.Pages
             _name = null;
 
             Clear();
-
             Write("Enter your name: ");
 
             _name = ReadLine();
-
-            if (string.IsNullOrEmpty(_name)||string.IsNullOrWhiteSpace(_name))
-            {
-                Clear();
-                WriteLine("This field is mandatory!!!");
-
-                _name = null;
-
-                Thread.Sleep(4000);
-
-                PageOrderRun();
-            }
-
-            PageOrderRun();
         }
 
         private void GetEmail()
@@ -183,37 +110,9 @@ namespace SushiMarcet.Pages
             _email = null;
 
             Clear();
-
             Write("Enter your email: ");
 
             _email = ReadLine();
-
-            if (IsValidEmail(_email) == false)
-            {
-                Clear();
-                WriteLine("Email entered incorrectly!!!");
-
-                _email = null;
-
-                Thread.Sleep(4000);
-
-                PageOrderRun();
-            }
-
-            PageOrderRun();
-        }
-
-        private bool IsValidEmail(string email)
-        {
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
         }
 
         private void GetPhoneNumber()
@@ -221,30 +120,9 @@ namespace SushiMarcet.Pages
             _phoneNumber = null;
 
             Clear();
-
             Write("Enter your phone number: ");
 
             _phoneNumber = ReadLine();
-
-            if(IsValidPhoneNumber(_phoneNumber) == false)
-            {
-                Clear();
-
-                WriteLine("Phone number entered incorrectly!!!");
-
-                _phoneNumber = null;
-
-                Thread.Sleep(4000);
-
-                PageOrderRun();
-            }
-
-            PageOrderRun();
-        }
-
-        private bool IsValidPhoneNumber(string number)
-        {
-            return Regex.Match(number, @"^(\+375|80)(29|25|44|33)(\d{3})(\d{2})(\d{2})$").Success;
         }
 
         private void GetAdressDelivery()
@@ -276,38 +154,48 @@ namespace SushiMarcet.Pages
             Write("Comments (optional): ");
             _comment = ReadLine();
 
-            if(IsAdress(_city,_street,_houseNumber) == false)
+            _adressDelivery = $"City: {_city}, House number: {_houseNumber}, Street: {_street}, Apartment: {_apartment}, Comments: {_comment}"; 
+        }
+
+        private void ValidateOrderAndToOrder(Order order)
+        {
+            var result = new List<ValidationResult>();
+            var context = new ValidationContext(order);
+
+            if (!Validator.TryValidateObject(order, context, result, true))
             {
                 Clear();
 
-                WriteLine("Adress entered incorrectly!!!");
-
-                Thread.Sleep(4000);
-
+                foreach(var error in result)
+                {
+                    
+                    WriteLine($"{error} - incorrect input or not all fields are required! The order is not made.");
+                    Thread.Sleep(4000);
+                }
                 PageOrderRun();
             }
             else
             {
-                _adressDelivery = $"City: {_city}, House number: {_houseNumber}, Street: {_street}, Apartment: {_apartment}, Comments: {_comment}";
-
-                PageOrderRun();
-            }            
-        }
-
-        private bool IsAdress(string city, string street, string houseNumber)
-        {
-            if ((string.IsNullOrEmpty(city) || string.IsNullOrWhiteSpace(city)) || (string.IsNullOrEmpty(street) || string.IsNullOrWhiteSpace(street)) || (string.IsNullOrEmpty(houseNumber) || string.IsNullOrWhiteSpace(houseNumber)))
-            {
-                return false;
+                ToOrder(order);
             }
-            else
-                return true;
         }
 
         private void PageOrderRun()
         {
                 PageOrder pageOrder = new(_name, _email, _phoneNumber, _adressDelivery);
                 _ = pageOrder.Run();           
+        }
+
+        private void PageMainMenuRun()
+        {
+            PageMainMenu pageMainMenu = new PageMainMenu();
+            _ = pageMainMenu.Run();
+        }
+
+        private void PageCartRun()
+        {
+            PageCart pageCart = new PageCart();
+            _ = pageCart.Run();
         }
     }
 }

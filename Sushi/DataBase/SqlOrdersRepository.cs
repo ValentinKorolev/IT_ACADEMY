@@ -25,7 +25,7 @@ namespace SushiMarcet.DataBase
 
             }catch (Exception ex)
             {
-                Logger<PageOrder>.Error("Read InnerException", ex.InnerException);
+
                 WriteLine("Order not accepted! No internet connection!");
                 Thread.Sleep(10000);
             }

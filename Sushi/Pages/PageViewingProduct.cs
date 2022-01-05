@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Pages
 {
-    internal class PageViewingProduct : PageFather
+    internal sealed class PageViewingProduct : PageFather
     {
         private SauceAndDishes? _currentDishes;
         private Sushi? _currentSushi;

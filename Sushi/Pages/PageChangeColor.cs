@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Pages
 {
-    internal class PageChangeColor : PageFather
+    internal sealed class PageChangeColor : PageFather
     {
         public PageChangeColor()
         {
