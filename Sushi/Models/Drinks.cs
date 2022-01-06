@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SushiMarcet.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -7,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Models
 {
-    internal class Drinks
+    [DrinksValidate]
+    internal class Drinks : IShowDataProduct
     {
         private decimal _price;
         public int Id { get; set; }

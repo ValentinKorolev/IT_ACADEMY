@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SushiMarcet.Attributes;
 
 namespace SushiMarcet.Models
 {
-    internal class SauceAndDishes
+    [DishesValidate]
+    internal class SauceAndDishes : IShowDataProduct
     {
         private decimal _price;
         public int Id { get; set; }

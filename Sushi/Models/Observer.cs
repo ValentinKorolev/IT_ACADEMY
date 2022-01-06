@@ -20,7 +20,6 @@ namespace SushiMarcet.Models
         public const string Futomaki = "Futomaki";
         public const string Nigiri = "Nigiri";
         public const string BakedSushi = "Baked sushi";
-        public const string Sets = "Sets";
         public const string SaucesAndSideDishes = "Sauces and side dishes";
     }
 }

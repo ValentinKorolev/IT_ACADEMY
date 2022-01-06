@@ -9,19 +9,16 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.MyLogger
 {
-    public class MyLogger<T> /*: IMyLogger*/
+    public class MyLogger<T> : IMyLogger
     {
+        IMyLogger _logger;
         private readonly string _nameSpace;
-        private readonly string _nameMethod;
         private readonly string _currentTime = DateTime.Now.ToString();
         private FileService? _fileLogObserver;
 
         public MyLogger()
         {
-            _nameSpace = typeof(T).Name;
-            
-
-            //_nameMethod = MethodBase.GetCurrentMethod().Name;
+            _nameSpace = typeof(T).Name;            
         }
 
         private string DesignerString(LogLevel logLevel, string message,  string nameMethod, Exception exception)
@@ -31,7 +28,7 @@ namespace SushiMarcet.MyLogger
                 : $"{_currentTime}|{logLevel}|{_nameSpace}|{nameMethod}|Thread - {Environment.CurrentManagedThreadId}|{message}";
         }
 
-        private string Log(LogLevel logLevel, string message, string nameMethod,Exception ex = null)
+        public string Log(LogLevel logLevel, string message, string nameMethod,Exception ex = null)
         {
             string logMessage = DesignerString(logLevel, message, nameMethod, ex);
 

@@ -8,6 +8,7 @@ namespace SushiMarcet.Interfaces
 {
     public interface IMyLogger
     {
+        string Log(LogLevel logLevel, string message, string nameMethod, Exception ex = null);
         public void Info(string message);
 
         public void Debug(string message);

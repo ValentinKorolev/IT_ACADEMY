@@ -1,9 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+
 
 namespace SushiMarcet.Pages
 {
@@ -119,14 +115,11 @@ namespace SushiMarcet.Pages
 
                     Drinks drink = new(_infoId, _name, _price, _description);
 
-                    //Create in Db drinks
-                    sqlDrinks.Create(drink);
-                    sqlDrinks.Dispose();
+                    ValidateDrinkAndCreate(drink);
 
-                    //Create in Json drinks
-                    jsonDrinks.Create(drink);
-
+                    Clear();
                     WriteLine($"Drink: {drink.ShowDataForAdmin()} - ADDED");
+                    Thread.Sleep(3000);
                 }
 
             } while (keyPressed != ConsoleKey.Escape);
@@ -165,13 +158,8 @@ namespace SushiMarcet.Pages
                     _description = ReadLine();
 
                     Drinks updateDrinks = new(drinkId, _name, _price, _description);
-                    
-                    //Update Drink in Db
-                    sqlDrinks.Update(updateDrinks);
-                    sqlDrinks.Dispose();
 
-                    //Update Drink in Json
-                    jsonDrinks.Update(updateDrinks);
+                    ValidateDrinkAndUpdate(updateDrinks);
 
                     Clear();
                     WriteLine($"Drink with Id - {drinkId} UPDATE");
@@ -241,7 +229,63 @@ namespace SushiMarcet.Pages
 
             PageAdminDrinksRun();
         }
+        private void ValidateDrinkAndCreate(Drinks drink)
+        {
+            var result = new List<ValidationResult>();
+            var context = new ValidationContext(drink);
 
+            if (!Validator.TryValidateObject(drink, context, result, true))
+            {
+                Clear();
+
+                foreach (var error in result)
+                {
+
+                    WriteLine($"{error} - incorrect input or not all fields are required! The drink is not made.");
+                    Thread.Sleep(4000);
+
+                    PageAdminDrinksRun();
+                }
+            }
+            else
+            {
+                //Create in Db drink
+                sqlDrinks.Create(drink);
+                sqlDrinks.Dispose();
+
+                //Create in Json drink
+                jsonDrinks.Create(drink);
+            }
+        }
+
+        private void ValidateDrinkAndUpdate(Drinks drink)
+        {
+            var result = new List<ValidationResult>();
+            var context = new ValidationContext(drink);
+
+            if (!Validator.TryValidateObject(drink, context, result, true))
+            {
+                Clear();
+
+                foreach (var error in result)
+                {
+
+                    WriteLine($"{error} - incorrect input or not all fields are required! The drink is not update.");
+                    Thread.Sleep(4000);
+
+                    PageAdminDrinksRun();
+                }
+            }
+            else
+            {
+                //Update in Db drink
+                sqlDrinks.Update(drink);
+                sqlDrinks.Dispose();
+
+                //Update in Json drink
+                jsonDrinks.Update(drink);
+            }
+        }
         private bool CheckProduct(int id)
         {
             return jsonDrinks.GetItem(id) is not null && sqlDrinks.GetItem(id) is not null;

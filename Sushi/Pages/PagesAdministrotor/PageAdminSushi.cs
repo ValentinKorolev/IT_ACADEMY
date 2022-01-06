@@ -1,9 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace SushiMarcet.Pages
 {
@@ -63,8 +59,8 @@ namespace SushiMarcet.Pages
         {
             List<Sushi> listSushi = new List<Sushi>();
 
-            //listSushi = (List<Sushi>)sqlSushi.GetItemList();
-            listSushi = (List<Sushi>)jsonSushi.GetItemList();
+            listSushi = (List<Sushi>)sqlSushi.GetItemList();
+            //listSushi = (List<Sushi>)jsonSushi.GetItemList();
 
             sqlSushi.Dispose();
 
@@ -121,14 +117,11 @@ namespace SushiMarcet.Pages
 
                     Sushi sushi = new(_infoId, _type, _name, _price, _description);
 
-                    //Create in Db sushi
-                    sqlSushi.Create(sushi);
-                    sqlSushi.Dispose();
+                    ValidateSushiAndCreate(sushi);
 
-                    //Create in Json sushi
-                    jsonSushi.Create(sushi);
-
+                    Clear();
                     WriteLine($"Sushi: {sushi.ShowDataForAdmin()} - ADDED");
+                    Thread.Sleep(3000);
                 }
 
             } while (keyPressed != ConsoleKey.Escape);
@@ -171,12 +164,7 @@ namespace SushiMarcet.Pages
 
                     Sushi updateSushi = new(sushiId, _type, _name, _price, _description);
 
-                    //Update Sushi Db
-                    sqlSushi.Update(updateSushi);
-                    sqlSushi.Dispose();
-
-                    //Update Sushi Json
-                    jsonSushi.Update(updateSushi);
+                    ValidateSushiAndUpdate(updateSushi);
 
                     Clear();
                     WriteLine($"Sushi with Id - {sushiId} UPDATE");
@@ -246,6 +234,64 @@ namespace SushiMarcet.Pages
 
             PageAdminSushiRun();
 
+        }
+
+        private void ValidateSushiAndCreate(Sushi sushi)
+        {
+            var result = new List<ValidationResult>();
+            var context = new ValidationContext(sushi);
+
+            if (!Validator.TryValidateObject(sushi, context, result, true))
+            {
+                Clear();
+
+                foreach (var error in result)
+                {
+
+                    WriteLine($"{error} - incorrect input or not all fields are required! The sushi is not made.");
+                    Thread.Sleep(4000);
+
+                    PageAdminSushiRun();
+                }
+            }
+            else
+            {
+                //Create in Db sushi
+                sqlSushi.Create(sushi);
+                sqlSushi.Dispose();
+
+                //Create in Json sushi
+                jsonSushi.Create(sushi);
+            }
+        }
+
+        private void ValidateSushiAndUpdate(Sushi sushi)
+        {
+            var result = new List<ValidationResult>();
+            var context = new ValidationContext(sushi);
+
+            if (!Validator.TryValidateObject(sushi, context, result, true))
+            {
+                Clear();
+
+                foreach (var error in result)
+                {
+
+                    WriteLine($"{error} - incorrect input or not all fields are required! The sushi is not update.");
+                    Thread.Sleep(4000);
+
+                    PageAdminSushiRun();
+                }
+            }
+            else
+            {
+                //Update in Db sushi
+                sqlSushi.Update(sushi);
+                sqlSushi.Dispose();
+
+                //Update in Json sushi
+               jsonSushi.Update(sushi);
+            }
         }
 
         private bool CheckProduct(int id)

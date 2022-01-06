@@ -61,7 +61,9 @@ namespace SushiMarcet.DataBase
         {
             try
             {
-                db.Entry(item).State = EntityState.Modified;
+                var updateDrinks = GetItem(item.Id);
+
+                db.Entry(updateDrinks).CurrentValues.SetValues(item);
                 db.SaveChanges();
             }
             catch (Exception ex)

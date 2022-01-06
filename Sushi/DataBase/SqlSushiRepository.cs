@@ -11,6 +11,7 @@ namespace SushiMarcet.Models
     {
         private ApplicationContext db;
 
+
         public SqlSushiRepository()
         {
             db = new ApplicationContext();
@@ -65,13 +66,16 @@ namespace SushiMarcet.Models
         {
             try
             {
-                    db.Entry(item).State = EntityState.Modified;
-                    db.SaveChanges();
+                var updateSushi = GetItem(item.Id);
+
+                db.Entry(updateSushi).CurrentValues.SetValues(item);
+                db.SaveChanges();
+                                
             }
             catch (Exception ex)
             {
                 Clear();
-                WriteLine($"Sushi with Id - ({item.Id}) NOT FOUND in DataBase");
+                WriteLine($"Error !!! Please, read logs");
                 Thread.Sleep(3000);
             }
         }

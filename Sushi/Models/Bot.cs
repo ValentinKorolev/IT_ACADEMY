@@ -37,9 +37,6 @@ namespace SushiMarcet
 
 
             Thread.Sleep(1000);
-
-          //  Log.Info("Bot say hello");
-
             WriteLine("Please, press any key to continue ...");
 
             keyInfo = ReadKey();
