@@ -110,9 +110,7 @@ namespace SushiMarcet.Pages
                 WriteLine($"{_currentSushi.Name} added to cart");
                 Thread.Sleep(2000);
 
-                PageMenuSushi pageMenuSushi = new(_currentSushi.Type);
-                _ = pageMenuSushi.Run();
-
+                PageMenuSushiRun(_currentSushi.Type);
             }
             else if(_currentDishes is not null)
             {
@@ -124,8 +122,7 @@ namespace SushiMarcet.Pages
                 WriteLine($"{_currentDishes.Name} added to cart");
                 Thread.Sleep(2000);
 
-                PageMenuDishes pageMenuDishes = new();
-                _ = pageMenuDishes.Run();
+                PageMenuDishesRun();
             }
             else if (_currentDrinks is not null)
             {
@@ -137,8 +134,7 @@ namespace SushiMarcet.Pages
                 WriteLine($"{_currentDrinks.Name} added to cart");
                 Thread.Sleep(2000);
 
-                PageMenuDrinks pageMenuDrinks = new();
-                _ = pageMenuDrinks.Run();
+                PageMenuDrinksRun();
             }
         }
 
@@ -146,19 +142,35 @@ namespace SushiMarcet.Pages
         {
             if(_currentSushi is not null)
             {
-                PageMenuSushi pageMenuSushi = new(_currentSushi.Type);
-                _ = pageMenuSushi.Run();
+                PageMenuSushiRun(_currentSushi.Type);
             }
             else if (_currentDishes is not null)
             {
-                PageMenuDishes pageMenuDishes = new();
-                _ = pageMenuDishes.Run();
+                PageMenuDishesRun();
             }
             else if (_currentDrinks is not null)
             {
-                PageMenuDrinks pageMenuDrinks = new();
-                _ = pageMenuDrinks.Run();
+                PageMenuDrinksRun();
             }
         }
+
+        private void PageMenuSushiRun(string typeSushi)
+        {
+            PageMenuSushi pageMenuSushi = new(typeSushi);
+            _ = pageMenuSushi.Run();
+        }
+
+        private void PageMenuDishesRun()
+        {
+            PageMenuDishes pageMenuDishes = new();
+            _ = pageMenuDishes.Run();
+        }
+
+        private void PageMenuDrinksRun()
+        {
+            PageMenuDrinks pageMenuDrinks = new();
+            _ = pageMenuDrinks.Run();
+        }
+
     }
 }

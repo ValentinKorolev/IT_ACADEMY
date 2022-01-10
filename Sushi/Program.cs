@@ -1,10 +1,12 @@
-﻿
+﻿using SushiMarcet.Exceptions;
+
 class Programm
 {
     static void Main(string[] args)
     {
         try
         {
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
 
             new Logger().Info("The application is running");
 
@@ -12,9 +14,10 @@ class Programm
             Bot.AskNameUser();
             Bot.ShowMenu();
         }
-        catch (Exception ex)
+        catch (ApplicationMyException ex)
         {
-            new Logger().Error("The application is running", ex);
+            ex = new("Program failure",ex);
+            new Logger().Error("An unexpected situation has occurred", ex);
 
             Clear();
             WriteLine("Program failure, sorry :(");

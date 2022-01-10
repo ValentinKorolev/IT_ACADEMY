@@ -43,7 +43,7 @@ namespace SushiMarcet.Models
         {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
 
-            return $"{Name}|\n\nDescription: {Description}|\n\nServings: {Servings}|\n\nPrice: {Price:c}";
+            return $"{Name}\n\nDescription: {Description}\n\nServings: {Servings}\n\nPrice: {Price:c}";
         }
     }
 }

@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace SushiMarcet.DataBase
 {
     internal class SqlDrinksRepository : IRepository<Drinks>, IDisposable
@@ -31,6 +25,7 @@ namespace SushiMarcet.DataBase
             {
                 new Logger().Error("Adding a product to the database ended with an error", ex);
 
+                Clear();
                 WriteLine("Error, please look logs!");
                 Thread.Sleep(10000);
             }

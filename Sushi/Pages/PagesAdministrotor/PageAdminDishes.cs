@@ -262,7 +262,7 @@ namespace SushiMarcet.Pages
             {
                 //Create in Db dishes
                 sqlDishes.Create(dishes);
-                sqlDishes.Dispose();
+                //sqlDishes.Dispose();
 
                 //Create in Json dishes
                 jsonDishes.Create(dishes);

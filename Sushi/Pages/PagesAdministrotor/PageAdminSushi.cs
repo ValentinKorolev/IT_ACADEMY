@@ -268,7 +268,7 @@ namespace SushiMarcet.Pages
             {
                 //Create in Db sushi
                 sqlSushi.Create(sushi);
-                sqlSushi.Dispose();
+                //sqlSushi.Dispose();
 
                 //Create in Json sushi
                 jsonSushi.Create(sushi);
@@ -297,7 +297,7 @@ namespace SushiMarcet.Pages
             {
                 //Update in Db sushi
                 sqlSushi.Update(sushi);
-                sqlSushi.Dispose();
+                //sqlSushi.Dispose();
 
                 //Update in Json sushi
                jsonSushi.Update(sushi);

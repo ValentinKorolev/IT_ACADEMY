@@ -6,14 +6,12 @@ namespace SushiMarcet.MyLogger
 {
     public class Logger : IMyLogger
     {       
-        private string _nameSpace;
+        private string? _nameSpace;
         private readonly string _currentTime = DateTime.Now.ToString();
         private FileService? _fileService;
 
         private string DesignerString(LogLevel logLevel, string message, string nameSpace, string nameMethod, Exception exception)
         {
-            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
-
             return exception != null
                 ? $"{_currentTime}|{logLevel}|{nameSpace}|{nameMethod}|Thread - {Environment.CurrentManagedThreadId}|{message}|{exception}"
                 : $"{_currentTime}|{logLevel}|{nameSpace}|{nameMethod}|Thread - {Environment.CurrentManagedThreadId}|{message}";
@@ -42,9 +40,9 @@ namespace SushiMarcet.MyLogger
 
         private string GetNameSpase()
         {
-            var mth = new StackTrace().GetFrame(5).GetMethod();
-            var cls = mth.ReflectedType.Name;
-            return cls;
+            var method = new StackTrace().GetFrame(5).GetMethod();
+            var className = method.ReflectedType.Name;
+            return className;
         }
 
         public async void Info(string message)

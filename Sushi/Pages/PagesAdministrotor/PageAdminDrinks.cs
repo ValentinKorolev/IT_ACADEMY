@@ -260,7 +260,7 @@ namespace SushiMarcet.Pages
             {
                 //Create in Db drink
                 sqlDrinks.Create(drink);
-                sqlDrinks.Dispose();
+                //sqlDrinks.Dispose();
 
                 //Create in Json drink
                 jsonDrinks.Create(drink);
