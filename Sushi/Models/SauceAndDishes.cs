@@ -3,7 +3,7 @@
 namespace SushiMarcet.Models
 {
     [DishesValidate]
-    internal class SauceAndDishes : IShowDataProduct
+    internal sealed class SauceAndDishes : IShowDataProduct
     {
         private decimal _price;
         public int Id { get; init; }

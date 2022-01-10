@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SushiMarcet.Models
 {
     [DrinksValidate]
-    internal class Drinks : IShowDataProduct
+    internal sealed class Drinks : IShowDataProduct
     {
         private decimal _price;
         public int Id { get; init; }

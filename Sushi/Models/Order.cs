@@ -34,14 +34,17 @@ namespace SushiMarcet.Models
 
         public override string ToString()
         {
-            return Status == StatusOrder.NotReviewed
-               ? $"--Id: {Id}| Order time: {OrderTime}|"
-               : $"--Id: {Id}| Order time: {OrderTime}| Status: {Status}";
+            return  $"<<Id: {Id}|\nOrder time: {OrderTime}| {OrderAmount()}| Status: {Status}>>";
         }
 
         public string ShowData()
         {
-            return $"Id: {Id}| Order time: {OrderTime}|\n Name: {NameClient}| Email: {EmailClient}| Phone: {PhoneNumberClient}|\n Adress: {AdressDeliveryClient}|\n Cheque: {Cheque}";
+            return $"Id: {Id}| Order time: {OrderTime}|\nName: {NameClient}| Email: {EmailClient}| Phone: {PhoneNumberClient}|\nAdress: {AdressDeliveryClient}|\nCheque: {Cheque}";
+        }
+
+        public string OrderAmount()
+        {   
+            return Cheque[Cheque.IndexOf("\nOrder amount:")..];
         }
     }
 }

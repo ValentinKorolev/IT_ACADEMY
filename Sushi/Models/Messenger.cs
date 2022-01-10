@@ -4,7 +4,7 @@ using System.Net.Mail;
 namespace SushiMarcet.Models
 {
 
-    internal class Messenger
+    internal sealed class Messenger
     {
         readonly Logger Logger = new Logger();
 
@@ -17,9 +17,9 @@ namespace SushiMarcet.Models
 
         private TimeSpan _timeMessage = new (0,1,0);
         
-        private string _nameAdmin = "Administrator Sushi Marcet";
-        private string _emailMarcet = "sush1marcet@gmail.com";
-        private string _pass = "VhGfTgOy6D";
+        private readonly string _nameAdmin = "Administrator Sushi Marcet";
+        private readonly string _emailMarcet = "sush1marcet@gmail.com";
+        private readonly string _pass = "VhGfTgOy6D";
         private string _textAcceptedMessage;
         private string _textRejectedMessage;
 
@@ -27,9 +27,9 @@ namespace SushiMarcet.Models
         private MailAddress _to;
         private MailMessage _sender;
 
-        private SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+        private readonly SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
 
-        private Order _order;
+        private readonly Order _order;
 
         public Messenger(Order order, string message = null)
         {

@@ -4,7 +4,7 @@
 namespace SushiMarcet
 {
     [SushiValidate]
-    internal class Sushi : IShowDataProduct
+    internal sealed class Sushi : IShowDataProduct
     {
         private decimal _price;
         public int Id { get; init; }
