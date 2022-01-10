@@ -6,7 +6,7 @@ namespace SushiMarcet.Models
     internal class SauceAndDishes : IShowDataProduct
     {
         private decimal _price;
-        public int Id { get; set; }
+        public int Id { get; init; }
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Price
@@ -29,7 +29,7 @@ namespace SushiMarcet.Models
         {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
 
-            return $"{Name}; Number of servings: {Servings}; Price: {Price:c}";
+            return $"{Name}| Number of servings: {Servings}| Price: {Price:c}";
         }
 
         public string ShowDataForAdmin()
@@ -43,9 +43,7 @@ namespace SushiMarcet.Models
         {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
 
-            return Servings == numServings || Servings == 0
-                ? $"{Name}; Description: {Description}; Price: {Price:c}"
-                : $"{Name}; Description: {Description}; Servings: {Servings} Price: {Price:c}";
+            return $"{Name}|\n\nDescription: {Description}|\n\nServings: {Servings}|\n\nPrice: {Price:c}";
         }
     }
 }

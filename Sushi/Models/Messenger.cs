@@ -6,6 +6,8 @@ namespace SushiMarcet.Models
 
     internal class Messenger
     {
+        readonly Logger Logger = new Logger();
+
         public delegate void MessageHandler(Order order);
         public event MessageHandler OrderAcceptedMessageEvent;
         public event MessageHandler OrderRejectedMessageEvent;
@@ -72,6 +74,8 @@ namespace SushiMarcet.Models
             order.Status = StatusOrder.InProgress;
             SaveData(order);
 
+            Logger.Debug("Sended message (accepted order)");
+
             Thread.Sleep(_timeMessage);
         }
 
@@ -93,6 +97,8 @@ namespace SushiMarcet.Models
             SaveData(_order);
 
             smtp.Dispose();
+
+            Logger.Debug("Sended message (rejected order)");
         }
 
         private void CompletedOrderMessage(Order order)
@@ -113,6 +119,8 @@ namespace SushiMarcet.Models
 
             order.Status = StatusOrder.Completed;
             SaveData(order);
+
+            Logger.Debug("Sended message (complited order)");
 
             Thread.Sleep(_timeMessage);
         }
@@ -136,6 +144,8 @@ namespace SushiMarcet.Models
             order.Status = StatusOrder.Delivered;
             SaveData(order);
 
+            Logger.Debug("Sended message (delivered order)");
+
             Thread.Sleep(_timeMessage);
         }
 
@@ -158,6 +168,8 @@ namespace SushiMarcet.Models
 
             order.Status = StatusOrder.IsPaid;
             SaveData(order);
+
+            Logger.Debug("Sended message (paided order)");
         }
 
         private void SaveData(Order order)

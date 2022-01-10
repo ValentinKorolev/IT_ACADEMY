@@ -9,8 +9,9 @@ namespace SushiMarcet.Models
 {
     internal class SqlSushiRepository : IRepository<Sushi>, IDisposable
     {
-        private ApplicationContext db;
+        Logger Logger = new Logger();
 
+        private ApplicationContext db;
 
         public SqlSushiRepository()
         {
@@ -19,28 +20,36 @@ namespace SushiMarcet.Models
 
         public void Create(Sushi item)
         {
-                try
-                {
-                    db.Sushi.Add(item);
-                    db.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    WriteLine("Error, please look logs!");
-                    Thread.Sleep(10000);
-                } 
+            try
+            {
+                db.Sushi.Add(item);
+                db.SaveChanges();
+
+                Logger.Debug($"Product added to Db {item.ShowDataForAdmin()}");
+            }
+            catch (Exception ex)
+            {
+                new Logger().Error("Creating a product to the database ended with an error", ex);
+
+                WriteLine("Error, please look logs!");
+                Thread.Sleep(10000);
+            }
         }
 
         public void Delete(int id)
         {
             try
             {                               
-                    Sushi deleteSushi = db.Sushi.FirstOrDefault(_ => _.Id == id);
-                    db.Sushi.Remove(deleteSushi);
-                    db.SaveChanges();                
+                Sushi deleteSushi = db.Sushi.FirstOrDefault(_ => _.Id == id);
+                db.Sushi.Remove(deleteSushi);
+                db.SaveChanges();
+
+                Logger.Debug($"Product deleted to Db {deleteSushi.ShowDataForAdmin()}");
             }
             catch (Exception ex)
             {
+                new Logger().Error("Deleting a product to the database ended with an error", ex);
+
                 Clear();
                 WriteLine($"Sushi with Id - ({id}) NOT FOUND in DataBase");
                 Thread.Sleep(3000);
@@ -70,10 +79,13 @@ namespace SushiMarcet.Models
 
                 db.Entry(updateSushi).CurrentValues.SetValues(item);
                 db.SaveChanges();
-                                
+
+                Logger.Debug($"Product updated to Db {updateSushi.ShowDataForAdmin()}");
             }
             catch (Exception ex)
             {
+                new Logger().Error("Updating a product to the database ended with an error", ex);
+
                 Clear();
                 WriteLine($"Error !!! Please, read logs");
                 Thread.Sleep(3000);

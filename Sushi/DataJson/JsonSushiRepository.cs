@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Models
 {
-    internal class JsonSushiRepository : IRepository<Sushi>
+    internal sealed class JsonSushiRepository : IRepository<Sushi>
     {
+        Logger Logger = new Logger();
+
         public void Create(Sushi item)
         {
             ListProducts model = new ListProducts();
@@ -36,6 +38,8 @@ namespace SushiMarcet.Models
 
                 File.AppendAllText(Observer.FileNameProduct, _jsonObject);
             }
+
+            Logger.Debug($"Product added to Json {item.ShowDataForAdmin()}");
         }
 
         public void Delete(int id)
@@ -60,6 +64,7 @@ namespace SushiMarcet.Models
                 string _jsonObject = JsonConvert.SerializeObject(model);
                 File.AppendAllText(Observer.FileNameProduct, _jsonObject);
 
+                Logger.Debug($"Product deleted to Json {deleteSushi.ShowDataForAdmin()}");
             }
             else
             {
@@ -143,6 +148,7 @@ namespace SushiMarcet.Models
                 string _jsonObject = JsonConvert.SerializeObject(model);
                 File.AppendAllText(Observer.FileNameProduct, _jsonObject);
 
+                Logger.Debug($"Product updated to Json {item.ShowDataForAdmin()}");
             }
             else
             {

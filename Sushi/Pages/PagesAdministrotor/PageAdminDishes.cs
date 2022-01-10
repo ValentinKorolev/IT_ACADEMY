@@ -4,6 +4,8 @@ namespace SushiMarcet.Pages
 {
     internal sealed class PageAdminDishes : PageFather
     {
+        Logger Logger = new Logger();
+
         private const string NameAdmin = "Admin123";
         private const string PassAdmin = "122345";
 
@@ -79,6 +81,8 @@ namespace SushiMarcet.Pages
                     //Delete Dishes Json
                     jsonDishes.Delete(_dishesId);
 
+                    Logger.Debug($"Dish with Id - {_dishesId} DELETE");
+
                     Clear();
                     WriteLine($"Dish with Id - {_dishesId} DELETE");
                     Thread.Sleep(3000);
@@ -87,6 +91,8 @@ namespace SushiMarcet.Pages
                 }
                 else if (keyPressed != ConsoleKey.Escape)
                 {
+                    Logger.Debug($"Incorrect input or dish with Id - ({ _dishesId}) NOT FOUND");
+
                     Clear();
                     WriteLine($"Incorrect input or dish with Id - ({_dishesId}) NOT FOUND");
                     Thread.Sleep(4000);
@@ -127,14 +133,21 @@ namespace SushiMarcet.Pages
                     _name = ReadLine();
 
                     WriteLine("Enter Price Dishes: ");
-                    _price = Convert.ToDecimal(ReadLine());
+                    _ = decimal.TryParse(ReadLine(), out _price);
 
                     WriteLine("Enter Descripion Dishes (500 symbol): ");
                     _description = ReadLine();
 
+                    if(_price >= 50)
+                    {
+                        _price /= 100; 
+                    }
+
                     SauceAndDishes updateDish = new(_dishesId, _name, _price, _description);
 
                     ValidateDishAndUpdate(updateDish);
+
+                    Logger.Debug($"Dish with Id - {_dishesId} UPDATE");
 
                     Clear();
                     WriteLine($"Dish with Id - {_dishesId} UPDATE");
@@ -144,6 +157,8 @@ namespace SushiMarcet.Pages
                 }
                 else if (keyPressed != ConsoleKey.Escape)
                 {
+                    Logger.Debug($"Incorrect input or dish with Id - ({ _dishesId}) NOT FOUND");
+
                     Clear();
                     WriteLine($"Incorrect input or dish with Id - ({_dishesId}) NOT FOUND");
                     Thread.Sleep(4000);
@@ -178,7 +193,7 @@ namespace SushiMarcet.Pages
                     _name = ReadLine();
 
                     WriteLine("Enter Price Dishes: ");
-                    _price = Convert.ToDecimal(ReadLine());
+                    _ = decimal.TryParse(ReadLine(), out _price);
 
                     WriteLine("Enter Descripion Dishes (500 symbol): ");
                     _description = ReadLine();
@@ -186,6 +201,8 @@ namespace SushiMarcet.Pages
                     SauceAndDishes dishes = new(_infoId, _name, _price, _description);
 
                     ValidateDishAndCreate(dishes);
+
+                    Logger.Debug($"Dishes with id ({dishes.Id}) - ADDED");
 
                     Clear();
                     WriteLine($"Dishes: {dishes.ShowDataForAdmin()} - ADDED");

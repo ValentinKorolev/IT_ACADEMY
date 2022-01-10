@@ -108,10 +108,15 @@ namespace SushiMarcet.Pages
                     _name = ReadLine();
 
                     WriteLine("Enter Price Drink: ");
-                    _price = Convert.ToDecimal(ReadLine());
+                    _ = decimal.TryParse(ReadLine(), out _price);
 
                     WriteLine("Enter Descripion Drink (200 symbol): ");
                     _description = ReadLine();
+
+                    if (_price >= 100)
+                    {
+                        _price /= 100;
+                    }
 
                     Drinks drink = new(_infoId, _name, _price, _description);
 
@@ -123,7 +128,6 @@ namespace SushiMarcet.Pages
                 }
 
             } while (keyPressed != ConsoleKey.Escape);
-
         }
 
         private void UpdateDrinks()
@@ -152,10 +156,15 @@ namespace SushiMarcet.Pages
                     _name = ReadLine();
 
                     WriteLine("Enter Price Drink: ");
-                    _price = Convert.ToDecimal(ReadLine());
+                    _ = decimal.TryParse(ReadLine(), out _price);
 
                     WriteLine("Enter Descripion Drink (200 symbol): ");
                     _description = ReadLine();
+
+                    if (_price >= 100)
+                    {
+                        _price /= 100;
+                    }
 
                     Drinks updateDrinks = new(drinkId, _name, _price, _description);
 

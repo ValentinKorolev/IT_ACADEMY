@@ -8,6 +8,7 @@ namespace SushiMarcet.DataBase
 {
     internal class SqlOrdersRepository : IRepository<Order>, IDisposable
     {
+        Logger Logger = new Logger();
 
         private ApplicationContext db;
 
@@ -23,10 +24,14 @@ namespace SushiMarcet.DataBase
                 db.Add(item);
                 db.SaveChanges();
 
-            }catch (Exception ex)
-            {
+                Logger.Debug($"Order added to Db {item.ShowData()}");
 
-                WriteLine("Order not accepted! No internet connection!");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Adding the order to Db ends with error ", ex);
+
+                WriteLine("The operation ended in failure");
                 Thread.Sleep(10000);
             }
         }
@@ -41,6 +46,11 @@ namespace SushiMarcet.DataBase
             throw new NotImplementedException();
         }
 
+        public Order GetItem(Guid id)
+        {
+            return db.Order.FirstOrDefault(_ => _.Id == id);
+        }
+
         public IEnumerable<Order> GetItemList()
         {
             return db.Order.ToList();
@@ -53,9 +63,22 @@ namespace SushiMarcet.DataBase
 
         public void Update(Order item)
         {
-            Order updateOrder = db.Order.FirstOrDefault(_ => _.Id == item.Id);
-            updateOrder.Status = item.Status;
-            db.SaveChanges();
+            try
+            {
+                Order updateOrder = db.Order.FirstOrDefault(_ => _.Id == item.Id);
+                updateOrder.Status = item.Status;
+                db.SaveChanges();
+
+                Logger.Debug($"Order updated to Db {updateOrder}");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Updating the order to Db ends with error", ex);
+
+                Clear();
+                WriteLine("The operation ended in failure");
+                Thread.Sleep(10000);
+            }           
         }
 
 

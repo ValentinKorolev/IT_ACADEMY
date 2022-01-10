@@ -9,6 +9,7 @@ namespace SushiMarcet.Pages
 {
     internal sealed class PageChangeColor : PageFather
     {
+        Logger Logger = new Logger();
         public PageChangeColor()
         {
             _bannerPage = "Change Color";
@@ -42,7 +43,9 @@ namespace SushiMarcet.Pages
         }
 
         private void ChangeColor(string color)
-        {            
+        {
+            Logger.Debug($"The user {Observer.nameUser} selected color {color}"); 
+
            Observer.color = color;
         }
 

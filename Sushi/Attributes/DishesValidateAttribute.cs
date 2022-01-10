@@ -6,6 +6,8 @@ namespace SushiMarcet.Attributes
 {
     public class DishesValidateAttribute : ValidationAttribute
     {
+        Logger Logger = new Logger();
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private string GetMethodName()
         {
@@ -24,22 +26,35 @@ namespace SushiMarcet.Attributes
                 {
                     if (IsId(dishes) == false || IsName(dishes) == false || IsDescription(dishes) == false || IsPrice(dishes) == false)
                     {
+                        Logger.Debug($"Failed validation ({dishes.ShowDataForAdmin()})");
                         return false;
                     }
                     else
+                    {
+                        Logger.Debug($"Passed validation ({dishes.ShowDataForAdmin()})");
                         return true;
+                    }
+
                 }
                 else if (currentMethod == "ValidateDishAndUpdate")
                 {
-                    if ( IsName(dishes) == false || IsDescription(dishes) == false || IsPrice(dishes) == false)
+                    if (IsName(dishes) == false || IsDescription(dishes) == false || IsPrice(dishes) == false)
                     {
+                        Logger.Debug($"Failed validation ({dishes.ShowDataForAdmin()})");
                         return false;
                     }
                     else
+                    {
+                        Logger.Debug($"Passed validation ({dishes.ShowDataForAdmin()})");
                         return true;
+                    }
+                        
                 }
                 else
+                {
+                    Logger.Warning($"The desired method was not found  ({currentMethod})");
                     return false;
+                }
             }
             else
             {

@@ -67,7 +67,7 @@ namespace SushiMarcet.Models
 
                 ResetColor();
 
-                DisplayOptionsWhiteRed();
+                DisplayOptionsFromDuskToDawn();
             }
             else if (color == "California")
             {
@@ -79,7 +79,7 @@ namespace SushiMarcet.Models
 
                 ResetColor();
 
-                DisplayOptionsBlackYellow();
+                DisplayOptionsCalifornia();
             }
             else if(color == "Matrix")
             {
@@ -91,7 +91,7 @@ namespace SushiMarcet.Models
                 
                 ResetColor();
 
-                DisplayOptionsBlackGreen();
+                DisplayOptionsMatrix();
             }
             else
             {
@@ -103,7 +103,7 @@ namespace SushiMarcet.Models
             }
         }
 
-        private void DisplayOptionsWhiteRed()
+        private void DisplayOptionsFromDuskToDawn()
         {
 
             WriteLine();
@@ -125,7 +125,7 @@ namespace SushiMarcet.Models
             ResetColor();
         }
 
-        private void DisplayOptionsBlackGreen()
+        private void DisplayOptionsMatrix()
         {
             WriteLine();
 
@@ -146,7 +146,7 @@ namespace SushiMarcet.Models
             ResetColor();
         }
 
-        private void DisplayOptionsBlackYellow()
+        private void DisplayOptionsCalifornia()
         {
             WriteLine();
 

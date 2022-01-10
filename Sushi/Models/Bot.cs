@@ -42,6 +42,8 @@ namespace SushiMarcet
             keyInfo = ReadKey();
             keyPressed = keyInfo.Key;
 
+            new Logger().Debug($"Key pressed - {keyPressed}");
+
             PageAdminRun(keyPressed);
         }
 
@@ -51,7 +53,12 @@ namespace SushiMarcet
 
             WriteLine("What is your name?");
 
-            Observer.nameUser = ReadLine(); 
+            Observer.nameUser = ReadLine();
+
+            if (Observer.nameUser != null)
+                new Logger().Debug($"User entered name - {Observer.nameUser}");
+            else
+                new Logger().Debug("The user did not enter a name");
         }
 
         public static void ShowMenu()

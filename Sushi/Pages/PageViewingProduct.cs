@@ -8,6 +8,8 @@ namespace SushiMarcet.Pages
 {
     internal sealed class PageViewingProduct : PageFather
     {
+        Logger Logger = new Logger();
+
         private SauceAndDishes? _currentDishes;
         private Sushi? _currentSushi;
         private Drinks? _currentDrinks;
@@ -102,6 +104,8 @@ namespace SushiMarcet.Pages
             {
                 Cart.Add(_currentSushi);
 
+                Logger.Debug($"The user {Observer.nameUser} added to cart  {_currentSushi}");
+
                 Clear();
                 WriteLine($"{_currentSushi.Name} added to cart");
                 Thread.Sleep(2000);
@@ -114,6 +118,8 @@ namespace SushiMarcet.Pages
             {
                 Cart.Add(_currentDishes);
 
+                Logger.Debug($"The user {Observer.nameUser} added to cart  {_currentDishes}");
+
                 Clear();
                 WriteLine($"{_currentDishes.Name} added to cart");
                 Thread.Sleep(2000);
@@ -124,6 +130,8 @@ namespace SushiMarcet.Pages
             else if (_currentDrinks is not null)
             {
                 Cart.Add(_currentDrinks);
+
+                Logger.Debug($"The user {Observer.nameUser} added to cart  {_currentDrinks}");
 
                 Clear();
                 WriteLine($"{_currentDrinks.Name} added to cart");

@@ -5,6 +5,7 @@ namespace SushiMarcet.Attributes
 {
     public class OrderValidateAttribute : ValidationAttribute
     {
+        Logger Logger = new Logger();
         
         public override bool IsValid(object? value)
         {
@@ -15,10 +16,14 @@ namespace SushiMarcet.Attributes
 
                 if(IsName(order) == false || IsEmail(order) == false || IsPhoneNumber(order) == false || IsAdress(order) == false)
                 {
+                    Logger.Debug($"Failed validation ({order})");
                     return false;
                 }
                 else
+                {
+                    Logger.Debug($"Passed validation ({order})");
                     return true;
+                }
 
             }
             return false;
@@ -71,11 +76,11 @@ namespace SushiMarcet.Attributes
         private bool IsAdress(Order order)
         {
 
-            if (string.IsNullOrEmpty(order.AdressDeliveryClient))
+            if (string.IsNullOrEmpty(order.AdressDeliveryClient) || string.IsNullOrWhiteSpace(order.AdressDeliveryClient))
             {
                 return false;
             }
-            else if (IsCity(order.AdressDeliveryClient) == false)
+            else if (CheckCorrectAdress(order.AdressDeliveryClient) == false)
             {
                 return false;
             }
@@ -83,7 +88,7 @@ namespace SushiMarcet.Attributes
                 return true;
         }
 
-        private bool IsCity(string adress)
+        private bool CheckCorrectAdress(string adress)
         {
             //City: test, House number: test, Street: test, Apartment: test, Comments: test
 

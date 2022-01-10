@@ -6,6 +6,8 @@ namespace SushiMarcet.Attributes
 {
     public class SushiValidateAttribute : ValidationAttribute
     {
+        Logger Logger = new Logger();
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private string GetMethodName()
         {
@@ -24,22 +26,33 @@ namespace SushiMarcet.Attributes
                 {
                     if(IsId(sushi) == false || IsType(sushi) == false || IsName(sushi) == false || IsDescription(sushi) == false || IsPrice(sushi) == false)
                     {
+                        Logger.Debug($"Failed validation ({sushi.ShowDataForAdmin()})");
                         return false;
                     }
                     else
+                    {
+                        Logger.Debug($"Passed validation ({sushi.ShowDataForAdmin()})");
                         return true;
+                    }
                 }
                 else if(currentMethod == "ValidateSushiAndUpdate")
                 {
                     if (IsType(sushi) == false || IsName(sushi) == false || IsDescription(sushi) == false || IsPrice(sushi) == false)
                     {
+                        Logger.Debug($"Failed validation ({sushi.ShowDataForAdmin()})");
                         return false;
                     }
                     else
+                    {
+                        Logger.Debug($"Passed validation ({sushi.ShowDataForAdmin()})");
                         return true;
+                    }
                 }
                 else
+                {
+                    Logger.Warning($"The desired method was not found  ({currentMethod})");
                     return false;
+                }
             }
             else
             {

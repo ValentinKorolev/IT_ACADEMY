@@ -7,7 +7,7 @@ namespace SushiMarcet
     internal class Sushi : IShowDataProduct
     {
         private decimal _price;
-        public int Id { get; protected set; }
+        public int Id { get; init; }
         public string Type { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -46,9 +46,7 @@ namespace SushiMarcet
         {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
 
-            return Servings == numServings || Servings == 0
-                ? $"{Name}| Description: {Description}| Price: {Price:c}"
-                : $"{Name}| Description: {Description}| Servings: {Servings}| Price: {Price:c}"; 
+             return $"{Name}|\n\nDescription: {Description}|\n\nServings: {Servings}|\n\nPrice: {Price:c}"; 
         }
     }  
 }

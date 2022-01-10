@@ -3,8 +3,10 @@
 
 namespace SushiMarcet.DataJson
 {
-    internal class JsonDishesRepository : IRepository<SauceAndDishes>
+    internal sealed class JsonDishesRepository : IRepository<SauceAndDishes>
     {
+        Logger Logger = new Logger();
+
         public void Create(SauceAndDishes item)
         {
             ListProducts model = new ListProducts();
@@ -32,6 +34,8 @@ namespace SushiMarcet.DataJson
 
                 File.AppendAllText(Observer.FileNameProduct, _jsonObject);
             }
+
+            Logger.Debug($"Product added to Json {item.ShowDataForAdmin()}");
         }
 
         public void Delete(int id)
@@ -56,13 +60,14 @@ namespace SushiMarcet.DataJson
                 string _jsonObject = JsonConvert.SerializeObject(model);
                 File.AppendAllText(Observer.FileNameProduct, _jsonObject);
 
+                Logger.Debug($"Product deleted to Json {deleteDish.ShowDataForAdmin()}");
             }
             else
             {
                 Clear();
                 WriteLine("File Products.json NOT FOUND");
                 Thread.Sleep(3000);
-            }
+            }          
         }
 
         public SauceAndDishes GetItem(int id)
@@ -129,6 +134,7 @@ namespace SushiMarcet.DataJson
                 string _jsonObject = JsonConvert.SerializeObject(model);
                 File.AppendAllText(Observer.FileNameProduct, _jsonObject);
 
+                Logger.Debug($"Product updated to Json {item.ShowDataForAdmin()}");
             }
             else
             {

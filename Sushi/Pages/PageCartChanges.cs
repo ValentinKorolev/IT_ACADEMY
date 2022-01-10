@@ -6,6 +6,8 @@ namespace SushiMarcet.Pages
 {
     internal sealed class PageCartChanges : PageFather
     {
+        Logger Logger = new Logger();
+
         private const string _goBack = "\nGo back";
         private readonly object? _currentProduct;
         public PageCartChanges()
@@ -84,6 +86,8 @@ namespace SushiMarcet.Pages
         private void RemoveFromCart(object product)
         {
             Cart.cartList.Remove(product);
+
+            Logger.Debug($"The user {Observer.nameUser} remove from cart {product}");
 
             Clear();
             WriteLine("The product has been removed from the cart");

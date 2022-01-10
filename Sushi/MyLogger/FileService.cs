@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
+
 
 namespace SushiMarcet.MyLogger
 {
@@ -28,7 +25,7 @@ namespace SushiMarcet.MyLogger
             {
                 _currentMessage = message;
                 _sizeMessage = message.Length;
-                _fileSize = _sizeMessage + Counter() + _sizeNewlineCharacter;
+                _fileSize = _sizeMessage + GetFileSize() + _sizeNewlineCharacter;
 
                 if(_fileSize < _maxLenght)
                 {
@@ -52,19 +49,22 @@ namespace SushiMarcet.MyLogger
                 _fileSize = 0;
                 _fileSize = _sizeMessage + _sizeNewlineCharacter;
 
-                IEnumerable<string> messages = new List<string>() { _currentMessage };                
-                await File.WriteAllLinesAsync(GetNameFile(_fileSize), messages);
 
+                using (StreamWriter sw = new StreamWriter(GetNameFile(_fileSize), true, Encoding.Default))
+                {
+                    await sw.WriteLineAsync(_currentMessage);
+                }
             }
             else
             {
-                IEnumerable<string> messages = new List<string>() { _currentMessage };
-                _currentPath = GetNameFile(_fileSize);
-                await File.AppendAllLinesAsync(_currentPath, messages);
+                using (StreamWriter sw = new StreamWriter(GetNameFile(_fileSize), true, Encoding.Default))
+                {
+                    await sw.WriteLineAsync(_currentMessage);
+                }
             }
         }
 
-        private long Counter()
+        private long GetFileSize()
         {
             FileInfo fileInfo = new FileInfo(_fileName);
 
@@ -73,7 +73,9 @@ namespace SushiMarcet.MyLogger
 
         private string UpdateFileName(string path)
         {
+
             File.Move(path, GetNameFile(_fileSize));
+           
             return GetNameFile(_fileSize);   
         }
 

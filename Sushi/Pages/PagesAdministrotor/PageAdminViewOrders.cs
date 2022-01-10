@@ -11,6 +11,8 @@ namespace SushiMarcet.Pages.PagesAdministrotor
 {
     internal sealed class PageAdminViewOrders : PageFather
     {
+        Logger Logger = new Logger();
+
         private Order _currentOrder;  
 
         public PageAdminViewOrders(Order order)
@@ -45,6 +47,8 @@ namespace SushiMarcet.Pages.PagesAdministrotor
 
             Thread thread = new Thread(new ThreadStart(messenger.SendMessageAccepted));
             thread.Start();
+
+            Logger.Debug($"An order accepted {order}");
 
             Clear();
             WriteLine("An order acceptance letter has been sent");

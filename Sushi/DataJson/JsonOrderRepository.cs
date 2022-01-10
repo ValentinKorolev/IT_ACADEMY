@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.DataJson
 {
-    internal class JsonOrderRepository : IRepository<Order>
+    internal sealed class JsonOrderRepository : IRepository<Order>
     {
+        Logger Logger = new Logger();
+
         public void Create(Order item)
         {
             ListOrders model = new ListOrders();
@@ -35,6 +37,8 @@ namespace SushiMarcet.DataJson
 
                 File.AppendAllText(Observer.FileNameOrders, _jsonObject);
             }
+
+            Logger.Debug($"Order added to Json {item.ShowData()}");
         }
 
         public void Delete(int id)
@@ -80,6 +84,8 @@ namespace SushiMarcet.DataJson
 
                 int index = model.Orders.IndexOf(model.Orders.FirstOrDefault(_ => _.Id == item.Id));
                 model.Orders[index] = item;
+
+                Logger.Debug($"Order updated to Json {item}");
             }
             else
             {

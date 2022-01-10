@@ -25,7 +25,7 @@ namespace SushiMarcet.Models
             return sb.ToString();
         }
 
-        public static string ReturnOrderAmount()
+        public static string OrderAmount()
         {
             decimal result = default;
             Type type;

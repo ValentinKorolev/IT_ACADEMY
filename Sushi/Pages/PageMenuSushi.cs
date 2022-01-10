@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace SushiMarcet.Pages
 {
-    internal sealed class PageMenuSushi : PageFather/*,IGetSushFromDb<Sushi>*/
+    internal sealed class PageMenuSushi : PageFather
     {
+        Logger Logger = new Logger();
+
         private readonly IEnumerable<Sushi> _sushis;
         private readonly string _goBack = "\nGo back";
 
@@ -16,6 +18,9 @@ namespace SushiMarcet.Pages
 
         public PageMenuSushi(string sushiType)
         {
+
+            Logger.Debug($"The user {Observer.nameUser} selected {sushiType}");
+
             _bannerPage = "Sushi Menu";
 
             switch (sushiType)

@@ -26,6 +26,8 @@ namespace SushiMarcet.Pages
                                      "1.Completed orders",
                                      "2.Rejected orders",
                                      "3.Orders in progress",
+                                     "4.Orders delivered",
+                                     "5.Orders paided",
                                      "Go back",
                                     };
         }
@@ -53,6 +55,14 @@ namespace SushiMarcet.Pages
                     GetOrdersInProgress();
                     PageAdminOrdersRun();
                     break;
+                case "4.Orders delivered":
+                    GetOrdersDelivered();
+                    PageAdminOrdersRun();
+                    break;
+                case "5.Orders paided":
+                    GetOrdersPaided();
+                    PageAdminOrdersRun();
+                    break;
             }
         }
 
@@ -75,6 +85,48 @@ namespace SushiMarcet.Pages
                 keyPressed = keyInfo.Key;
 
             } while (keyPressed != ConsoleKey.Escape) ;
+        }
+
+        private void GetOrdersDelivered()
+        {
+
+            do
+            {
+                Clear();
+                WriteLine("List orders delivered (Press ESC to go back)");
+                WriteLine();
+
+                orders = (List<Order>)sqlOrdersRepository.GetItemList(StatusOrder.Delivered);
+                // orders = (List<Order>)jsonOrderRepository.GetItemList(StatusOrder.InProgress);
+                sqlOrdersRepository.Dispose();
+
+                ShowOrdes(orders);
+
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;
+
+            } while (keyPressed != ConsoleKey.Escape);
+        }
+
+        private void GetOrdersPaided()
+        {
+
+            do
+            {
+                Clear();
+                WriteLine("List orders paided (Press ESC to go back)");
+                WriteLine();
+
+                orders = (List<Order>)sqlOrdersRepository.GetItemList(StatusOrder.IsPaid);
+                // orders = (List<Order>)jsonOrderRepository.GetItemList(StatusOrder.InProgress);
+                sqlOrdersRepository.Dispose();
+
+                ShowOrdes(orders);
+
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                keyPressed = keyInfo.Key;
+
+            } while (keyPressed != ConsoleKey.Escape);
         }
 
         private void GetRejectedOrders()

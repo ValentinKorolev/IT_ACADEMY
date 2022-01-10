@@ -110,10 +110,15 @@ namespace SushiMarcet.Pages
                     _name = ReadLine();
 
                     WriteLine("Enter Price Sushi: ");
-                    _price = Convert.ToDecimal(ReadLine());
+                    _ = decimal.TryParse(ReadLine(), out _price);
 
                     WriteLine("Enter Descripion Sushi (200 symbol): ");
                     _description = ReadLine();
+
+                    if (_price >= 100)
+                    {
+                        _price /= 100;
+                    }
 
                     Sushi sushi = new(_infoId, _type, _name, _price, _description);
 
@@ -157,10 +162,15 @@ namespace SushiMarcet.Pages
                     _name = ReadLine();
 
                     WriteLine("Enter Price Sushi: ");
-                    _price = Convert.ToDecimal(ReadLine());
+                    _ = decimal.TryParse(ReadLine(), out _price);
 
                     WriteLine("Enter Descripion Sushi (200 symbol): ");
                     _description = ReadLine();
+
+                    if (_price >= 100)
+                    {
+                        _price /= 100;
+                    }
 
                     Sushi updateSushi = new(sushiId, _type, _name, _price, _description);
 

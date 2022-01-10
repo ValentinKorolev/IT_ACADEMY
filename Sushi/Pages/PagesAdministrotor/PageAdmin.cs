@@ -13,12 +13,14 @@ namespace SushiMarcet.Models
         private const string NameAdmin = "Admin123";
         private const string PassAdmin = "122345";
 
-        private MyLogger<PageAdmin> logger = new();
+        Logger Logger = new Logger();
 
         public PageAdmin(string name, string pass)
         {
             if (NameAdmin != name || PassAdmin != pass)
             {
+                Logger.Debug("Login attempt failed");
+
                 Clear();
                 Bot.SayHello();
                 Bot.AskNameUser();
@@ -26,7 +28,7 @@ namespace SushiMarcet.Models
             }
             else
             {
-                logger.Info("The administrator has logged into the program");
+                Logger.Debug("Administrator entered in application");
 
                 _bannerPage = "Administrator Page";
                 

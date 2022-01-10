@@ -11,6 +11,8 @@ namespace SushiMarcet.Pages
 {
     internal sealed class PageOrder : PageFather
     {
+        Logger Logger = new Logger();
+
         SqlOrdersRepository sqlOrdersRepository;
         JsonOrderRepository jsonOrderRepository;
         
@@ -27,7 +29,7 @@ namespace SushiMarcet.Pages
             _phoneNumber = phoneNumber;
             _adressDelivery = adressDelivery;
 
-            _bannerPage = Cart.ShowTheContents() + Cart.ReturnOrderAmount() + "\n\nFill in the information about yourself: ";
+            _bannerPage = Cart.ShowTheContents() + Cart.OrderAmount() + "\n\nFill in the information about yourself: ";
 
             _options = new string[] {$"Name: {_name}",
                                      $"Email: {_email}",
@@ -66,7 +68,7 @@ namespace SushiMarcet.Pages
                 order.EmailClient = _email;
                 order.PhoneNumberClient = _phoneNumber;
                 order.AdressDeliveryClient = _adressDelivery;
-                order.Cheque = Cart.ShowTheContents() + Cart.ReturnOrderAmount();
+                order.Cheque = Cart.ShowTheContents() + Cart.OrderAmount();
 
                 ValidateOrderAndToOrder(order);
             }
@@ -85,6 +87,8 @@ namespace SushiMarcet.Pages
 
             jsonOrderRepository = new JsonOrderRepository();
             jsonOrderRepository.Create(order);
+
+            Logger.Debug($"The user {Observer.nameUser} ordered {order.ShowData()}");
 
             Clear();
             WriteLine("Your order has been accepted for processing");

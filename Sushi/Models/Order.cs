@@ -16,7 +16,7 @@ namespace SushiMarcet.Models
     [OrderValidate]
     internal class Order
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
         public DateTime OrderTime { get; set; }
         public string NameClient { get; set; }
         public string EmailClient { get; set; }
@@ -35,9 +35,10 @@ namespace SushiMarcet.Models
         public override string ToString()
         {
             return Status == StatusOrder.NotReviewed
-               ? $"--Id: { Id}| Order time: {OrderTime}|"
-               : $"--Id: { Id}| Order time: {OrderTime}| Status: {Status}";
+               ? $"--Id: {Id}| Order time: {OrderTime}|"
+               : $"--Id: {Id}| Order time: {OrderTime}| Status: {Status}";
         }
+
         public string ShowData()
         {
             return $"Id: {Id}| Order time: {OrderTime}|\n Name: {NameClient}| Email: {EmailClient}| Phone: {PhoneNumberClient}|\n Adress: {AdressDeliveryClient}|\n Cheque: {Cheque}";

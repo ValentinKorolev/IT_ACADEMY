@@ -18,7 +18,7 @@ namespace SushiMarcet.Pages
             }
             else
             {
-                _bannerPage = "Cart\n\n" + Cart.ShowTheContents() + Cart.ReturnOrderAmount();
+                _bannerPage = "Cart\n\n" + Cart.ShowTheContents() + Cart.OrderAmount();
                 _options = new string[] {"Make an order", "Make changes", "Go back" };
             }            
         }
